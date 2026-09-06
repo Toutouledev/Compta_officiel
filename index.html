@@ -16,30 +16,22 @@
   <script>
     try {
       var __savedTheme = localStorage.getItem('sandystrip_theme');
-      // Sombre et Minuit ont été retirés - quiconque les avait encore sauvegardés bascule
-      // automatiquement sur Pixelar, sans qu'il ait à y penser.
+
       if (__savedTheme === 'sombre' || __savedTheme === 'minuit') {
         __savedTheme = 'pixelar';
         localStorage.setItem('sandystrip_theme', __savedTheme);
       }
       if (__savedTheme) document.documentElement.setAttribute('data-theme', __savedTheme);
-    } catch (e) { /* localStorage indisponible */ }
+    } catch (e) {  }
   </script>
   <script>
-    // Pont de compatibilité : si cette page est chargée depuis un site externe (Netlify, etc.)
-    // plutôt que directement depuis Apps Script, google.script.run n'existe pas nativement - on le
-    // reconstruit avec exactement la même interface (withSuccessHandler/withFailureHandler puis le
-    // nom de la fonction), mais qui passe par fetch() en coulisses. Tout le reste du code de l'app
-    // (des centaines d'appels) continue de fonctionner sans la moindre modification.
+
     (function () {
-      // Détection par nom de domaine plutôt que par présence de google.script.run : Apps Script
-      // injecte parfois cette API un peu APRÈS l'exécution de ce script (page servie dans un iframe
-      // sandboxé, communication asynchrone) - se fier à sa présence pouvait donc conclure à tort
-      // qu'on est sur un site externe alors qu'on est bien sur Apps Script, juste un peu trop tôt.
+
       var hote = window.location.hostname;
       var estDansAppsScript = /(^|\.)script\.google\.com$/.test(hote) || /(^|\.)googleusercontent\.com$/.test(hote)
         || (typeof google !== 'undefined' && google.script && google.script.run);
-      if (estDansAppsScript) return; // déjà dans Apps Script, rien à faire ici
+      if (estDansAppsScript) return; 
 
       var URL_API_APPS_SCRIPT = localStorage.getItem('sandystrip_api_url') ||
         'https://script.google.com/macros/s/AKfycbwZImo5-wgnvjorcUvD4KyydaYWNGEJSvsT0aFBJRd6bx_2EDOtiq8CGb8snttVCVva/exec';
@@ -50,12 +42,12 @@
             if (nomProp === 'withSuccessHandler') return function (fn) { return construireChaineAppel(fn, echecFn); };
             if (nomProp === 'withFailureHandler') return function (fn) { return construireChaineAppel(succesFn, fn); };
             if (nomProp === 'withUserObject') return function () { return construireChaineAppel(succesFn, echecFn); };
-            // N'importe quel autre nom de propriété = c'est la vraie fonction serveur à appeler.
+            
             return function () {
               var args = Array.prototype.slice.call(arguments);
               fetch(URL_API_APPS_SCRIPT, {
                 method: 'POST',
-                headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // évite le préflight CORS (requête "simple")
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' }, 
                 body: JSON.stringify({ fonction: String(nomProp), args: args })
               })
                 .then(function (r) { return r.json(); })
@@ -92,7 +84,7 @@
       --pink: #e01d78; --pink-deep: #b3105c;
       --gold: #b8790c; --cyan: #0e8f80;
       --green: #1c8a50; --red: #d13349;
-      /* Clair = propre et pro : transitions courtes, sans fioriture. */
+      
       --anim-duree: .1s; --anim-easing: ease;
     }
     [data-theme="clair"] h2, [data-theme="clair"] h3, [data-theme="clair"] .brand {
@@ -110,7 +102,7 @@
       --pink: #ff2d78; --pink-deep: #d1105a;
       --gold: #ffcf4d; --cyan: #4de0c9;
       --green: #4de08a; --red: #ff4d6a;
-      /* Sandy Strip = énergique, néon : transitions un peu "rebondissantes". */
+      
       --anim-duree: .22s; --anim-easing: cubic-bezier(.34, 1.56, .64, 1);
     }
     [data-theme="sandystrip"] h2, [data-theme="sandystrip"] h3, [data-theme="sandystrip"] .brand {
@@ -128,7 +120,7 @@
       --pink: #22c55e; --pink-deep: #15803d;
       --gold: #f5c451; --cyan: #46dccb;
       --green: #4ade80; --red: #ff5d6c;
-      /* Pixelar = rétro/terminal : pas d'adoucissement, ça "claque" instantanément, façon vieux jeu. */
+      
       --anim-duree: .05s; --anim-easing: steps(2, jump-end);
     }
     [data-theme="pixelar"] h2, [data-theme="pixelar"] h3, [data-theme="pixelar"] .brand {
@@ -141,10 +133,7 @@
     [data-theme="pixelar"] .kpi-value, [data-theme="pixelar"] .settings-row-label {
       font-family: 'VT323', monospace; font-size: 1.3em; letter-spacing: .5px;
     }
-    /* Leopold's Lounge Bar - cabaret de luxe mais patiné, esprit speakeasy jazz/blues plutôt que
-       vitrine clinquante : laiton terni plutôt qu'or brillant, bleu de nuit enfumé, bordeaux éventé.
-       --pink pilote les boutons/actions principaux dans tout le reste de l'app : ici c'est le laiton
-       vieilli qui en hérite, donc chaque bouton "primaire" prend ce traitement sans toucher au reste. */
+    
     [data-theme="leopolds"] {
       --bg: #000000; --bg-panel: #0a0805; --bg-card: #120e08; --bg-card2: #1a140c;
       --border: #4a3712; --border-soft: #2c2212;
@@ -152,11 +141,10 @@
       --pink: #e8b923; --pink-deep: #b8901a;
       --gold: #ffcf40; --cyan: #5a8a8c;
       --green: #6b8f5a; --red: #8f3a3a;
-      /* Leopold's = feutré, lent, élégant - rien ne "saute", tout glisse. */
+      
       --anim-duree: .3s; --anim-easing: ease-in-out;
     }
-    /* Grain de vieux papier / fumée de club, très discret - juste assez pour casser la platitude
-       numérique et donner l'impression d'un endroit qui a vécu, pas d'un rendu 3D flambant neuf. */
+    
     [data-theme="leopolds"] body {
       background-image:
         radial-gradient(ellipse at 20% 15%, rgba(201,169,97,.05), transparent 55%),
@@ -164,17 +152,12 @@
         repeating-radial-gradient(circle at 0 0, transparent 0, rgba(0,0,0,.15) 2px, transparent 3px);
       background-size: auto, auto, 3px 3px;
     }
-    /* Typographie de collection, un ton dramatique/Art déco réservé à ce thème - le corps du texte
-       (tableaux, chiffres) garde la police par défaut pour rester dense et lisible. */
+    
     [data-theme="leopolds"] h1, [data-theme="leopolds"] h2, [data-theme="leopolds"] h3, [data-theme="leopolds"] .brand {
       font-family: 'Playfair Display', Georgia, serif; letter-spacing: .3px;
     }
     [data-theme="leopolds"] .brand { font-weight: 800; letter-spacing: 1.5px; }
-    /* Les petits libellés (au-dessus des chiffres, en-têtes de tableau) passent en petites
-       capitales espacées façon carte de menu gravée. Le MENU DE NAVIGATION reste volontairement
-       plus sobre : les items inactifs sont discrets (texte atténué, pas de graisse ni d'espacement
-       forcés) pour que l'item actif - lui, en évidence via son liseré doré - ressorte vraiment,
-       plutôt que d'avoir toute la liste également "criante" en doré. */
+    
     [data-theme="leopolds"] .kpi-label, [data-theme="leopolds"] th, [data-theme="leopolds"] .filter-btn, [data-theme="leopolds"] .settings-row-label {
       letter-spacing: 1px; font-weight: 600;
     }
@@ -182,8 +165,7 @@
       color: var(--text-mute); font-weight: 500; letter-spacing: .2px;
     }
     [data-theme="leopolds"] .kpi-value { font-family: 'Playfair Display', Georgia, serif; font-weight: 700; }
-    /* Signature : un fin liseré de laiton terni en haut des cartes qui portent un vrai résultat
-       chiffré (KPI, résumés) - pas sur tout, pour que ça reste une signature et non du bruit. */
+    
     [data-theme="leopolds"] .card:has(.kpi-value) {
       border-top: 2px solid var(--gold);
       box-shadow: 0 6px 20px rgba(201, 169, 97, .06);
@@ -192,9 +174,7 @@
       background: linear-gradient(135deg, var(--gold), var(--pink-deep));
       color: #16110a; font-weight: 700; text-shadow: none;
     }
-    /* Tous les boutons du thème passent en Playfair Display, espacement de petites capitales
-       gravées - même les liens-boutons de tableau (linklike) et le menu latéral, pour que "chaque
-       menu" ait la même écriture, pas seulement les titres. */
+    
     [data-theme="leopolds"] button, [data-theme="leopolds"] a.linklike, [data-theme="leopolds"] a.chip-btn {
       font-family: 'Playfair Display', Georgia, serif; letter-spacing: .4px;
     }
@@ -209,8 +189,7 @@
       background: var(--bg-card2); border-color: var(--border); color: var(--pink);
     }
     [data-theme="leopolds"] a.linklike:hover { border-color: var(--gold); color: var(--gold); background: var(--bg-card); }
-    /* Menu latéral (gauche/droite/haut) : l'item actif se marque d'un fin trait doré sur le côté -
-       plutôt qu'un simple fond plein - comme le numéro de table VIP à l'entrée d'un club. */
+    
     [data-theme="leopolds"] #app-shell.pos-left nav button.active, [data-theme="leopolds"] #app-shell.pos-right nav button.active,
     [data-theme="leopolds"] .ms-sidebar-item.active {
       background: rgba(201, 169, 97, .1); color: var(--gold);
@@ -219,12 +198,10 @@
     [data-theme="leopolds"] .ms-sidebar-item.active { padding-left: 8px; }
     [data-theme="leopolds"] nav button.active { background: var(--pink); color: #16110a; }
     * { box-sizing: border-box; }
-    /* Empêche le surlignage bleu de sélection de texte au clic répété (catalogue, boutons...),
-       tout en le laissant fonctionner normalement dans le Chat (pour copier un message) et dans
-       n'importe quel champ de saisie (les navigateurs gèrent déjà ça correctement par défaut). */
+    
     body { user-select: none; -webkit-user-select: none; }
     input, textarea, .chat-liste-claude, .chat-liste-claude * { user-select: text; -webkit-user-select: text; }
-    /* Case à cocher personnalisée, cohérente avec le thème, partout dans l'app (remplace le carré natif du navigateur) */
+    
     input[type="checkbox"] {
       -webkit-appearance: none; appearance: none; width: 21px; height: 21px; flex-shrink: 0;
       border: 2px solid var(--border); border-radius: 6px; background: var(--bg-card2);
@@ -270,12 +247,7 @@
       animation: defiler 14s linear infinite;
     }
     @keyframes defiler { from { transform: translateX(0); } to { transform: translateX(-100%); } }
-    /* Vitrine publique - première page vue avant toute connexion, structurée comme un vrai site :
-       en-tête fixe qui prend toute la largeur, corps centré en dessous, plusieurs "pages" (une
-       seule visible à la fois) plutôt qu'un long scroll unique.
-       Identité visuelle propre ("Speakeasy Vintage"), indépendante du thème choisi côté staff -
-       la vitrine publique a désormais son propre langage graphique, pas juste une variante du
-       thème de l'app. Sépia, art déco, Cinzel + Cormorant Garamond. */
+    
     #vitrine-publique {
       min-height: 100vh; font-family: 'Cormorant Garamond', serif; font-size: 18px;
       --vit-bg: #16110a; --vit-bg2: #1d1710; --vit-or: #c9a24b; --vit-or-vif: #e0bc6a;
@@ -312,8 +284,7 @@
       font-size: 11px; letter-spacing: 2px; text-transform: uppercase; border-radius: 0; padding: 9px 22px;
     }
     #vitrine-header-action .btn-primary:hover { background: var(--vit-or); color: var(--vit-bg); }
-    /* Boutons pleins ("Réserver", "Envoyer la demande"...) dans toute la vitrine - même traitement
-       qu'ailleurs sur le site : contour doré, pas de remplissage plein sauf au survol. */
+    
     #vitrine-publique .btn-primary {
       background: transparent; border: 1px solid var(--vit-or); color: var(--vit-or) !important;
       border-radius: 0; letter-spacing: 2px; text-transform: uppercase; font-size: 13px; font-weight: 700;
@@ -326,11 +297,9 @@
     #vitrine-publique label { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--vit-texte-mute); }
     #vitrine-publique .small { color: var(--vit-texte-mute); font-family: 'Cormorant Garamond', serif; font-style: italic; }
     .vitrine-corps { max-width: 1400px; margin: 0 auto; padding: 30px 24px 60px; }
-    /* "La carte" utilise toute la largeur disponible (menu + cigares côte à côte ont besoin de
-       place), les autres pages restent centrées naturellement grâce à leur propre contenu plus étroit. */
+    
     #vitrine-page-carte .carte-cadre { max-width: none; }
-    /* "La carte" - façon vrai menu de restaurant : cadre doré double, couronne, sections par
-       catégorie avec dividers ornementaux, plats en Playfair Display. */
+    
     .carte-cadre {
       max-width: 640px; margin: 0 auto; padding: 40px 32px; text-align: center;
       border: 2px solid var(--gold); border-radius: 4px; position: relative;
@@ -350,13 +319,13 @@
     .carte-plat-nom { font-family: 'Playfair Display', Georgia, serif; font-size: 19px; font-weight: 700; color: var(--text); }
     .carte-plat-prix { font-family: 'Playfair Display', Georgia, serif; font-size: 15px; color: var(--gold); margin-left: 8px; }
     .carte-plat-desc { font-style: italic; font-size: 13px; color: var(--text-mute); margin-top: 4px; line-height: 1.5; }
-    /* Billet de réservation - même esprit que la carte : cadre doré, sobre, élégant. */
+    
     .billet-carte { background: var(--bg-panel); padding: 32px 28px; text-align: center; border-bottom: 2px solid var(--gold); }
-    /* Coupon de statut - même esprit que le billet, mais posé dans la page plutôt qu'en modale. */
+    
     .coupon-carte { background: var(--bg-panel); border: 2px solid var(--gold); border-radius: 10px; padding: 28px 24px; text-align: center; }
     .coupon-statut { font-family: 'Playfair Display', Georgia, serif; font-size: 22px; font-weight: 800; margin: 8px 0; }
     .coupon-diviseur { border-top: 1px dashed var(--border); margin: 16px 0; }
-    /* Horaires - statut en direct + registre élégant façon liste, plutôt que des cases identiques. */
+    
     .horaires-statut-hero { max-width: 560px; margin: 0 auto 24px; text-align: center; padding: 22px; border-radius: 10px; border: 2px solid var(--gold); }
     .horaires-statut-point { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 8px; vertical-align: middle; }
     .horaires-statut-texte { font-family: 'Playfair Display', Georgia, serif; font-size: 20px; font-weight: 800; vertical-align: middle; }
@@ -380,19 +349,18 @@
     .billet-code { font-family: 'VT323', monospace; font-size: 22px; letter-spacing: 4px; color: var(--gold); }
     .billet-mention { font-size: 11px; color: var(--text-faint); margin-top: 10px; }
     .vitrine-hero { text-align: center; padding: 30px 0 10px; }
-    /* Accueil - cadre art déco double avec éventail décoratif, façon devanture de speakeasy. */
+    
     .vit-cadre { margin: 20px auto 40px; max-width: 1100px; border: 2px solid var(--vit-brun); padding: 5px; }
     .vit-cadre-inner { border: 1px solid var(--vit-brun); padding: 70px 40px; text-align: center; }
     .vit-eventail { width: 80px; height: 40px; margin: 0 auto 24px; background: repeating-conic-gradient(var(--vit-brun-clair) 0deg 10deg, transparent 10deg 20deg); border-radius: 80px 80px 0 0; opacity: .85; }
     .vit-kicker { font-family: 'Cinzel', serif; font-size: 12px; letter-spacing: 4px; text-transform: uppercase; color: var(--vit-texte-mute); margin-bottom: 20px; }
     .vit-diviseur-etoile { display: flex; align-items: center; justify-content: center; gap: 14px; margin: 24px auto; color: var(--vit-brun-clair); font-size: 14px; }
     .vit-diviseur-etoile::before, .vit-diviseur-etoile::after { content: ''; width: 60px; height: 1px; background: var(--vit-brun); }
-    /* Transition entre les pages de la vitrine - fondu + léger glissement, pas juste un
-       hidden/visible instantané. */
+    
     .vitrine-page { transition: opacity .1s ease, transform .1s ease; opacity: 1; transform: translateY(0); }
     .vitrine-page.vit-sortie { opacity: 0; transform: translateY(-12px); }
     .vitrine-page.vit-entree-depart { opacity: 0; transform: translateY(12px); }
-    /* Cartes de navigation - coins ornementaux façon cadre gravé, reprises sur toute la page. */
+    
     .vit-carte-nav { border: 1px solid #4a3a1e; padding: 30px 16px; text-align: center; position: relative; cursor: pointer; transition: border-color .2s ease; }
     .vit-carte-nav:hover { border-color: var(--vit-or); }
     .vit-carte-nav::before, .vit-carte-nav::after { content: ''; position: absolute; width: 12px; height: 12px; border: 1px solid var(--vit-brun-clair); }
@@ -423,7 +391,6 @@
     .who { font-size: 13px; color: var(--text-mute); }
     .who b { color: var(--gold); }
 
-    /* ---- app-shell : positionnement du menu (haut/bas/gauche/droite) + réduction ---- */
     #app-shell { display: flex; flex-direction: column; position: relative; min-height: calc(100vh - 65px); }
     #app-shell.pos-bottom { flex-direction: column; }
     #app-shell.pos-bottom nav { order: 2; border-bottom: none; border-top: 1px solid var(--border-soft); }
@@ -442,8 +409,7 @@
       border-bottom: none; border-right: 1px solid var(--border-soft); padding: 14px 10px;
       position: sticky; top: 65px; align-self: flex-start; height: calc(100vh - 65px); overflow-y: auto;
     }
-    /* Bouton ☰ compact (icône seule, taille fixe) : avant, son padding généreux créait un grand
-       vide transparent au-dessus du 1er item du menu - maintenant la boîte colle à l'icône. */
+    
     #app-shell.pos-left #nav-toggle, #app-shell.pos-right #nav-toggle {
       width: 34px; height: 34px; padding: 0; display: flex; align-items: center; justify-content: center;
       font-size: 15px; margin-bottom: 6px; flex-shrink: 0;
@@ -456,17 +422,13 @@
     #app-shell.pos-left nav button:not(.active):hover, #app-shell.pos-right nav button:not(.active):hover { background: var(--bg-card); }
     #app-shell.pos-left #nav-items, #app-shell.pos-right #nav-items { flex-direction: column; width: 100%; flex: 1; }
 
-    /* Réduit : le menu se rétrécit vraiment (largeur à gauche/droite, hauteur en haut), pas juste ses items,
-       et garde un fond continu pour ne pas ressembler à un bouton flottant isolé */
     nav.collapsed #nav-items { display: none; }
     #app-shell.pos-left nav.collapsed, #app-shell.pos-right nav.collapsed { width: 56px; padding: 14px 6px; align-items: center; }
     #app-shell.pos-left nav.collapsed #nav-toggle, #app-shell.pos-right nav.collapsed #nav-toggle { width: 100%; text-align: center; padding: 8px 0; }
     nav.collapsed { padding-top: 8px; padding-bottom: 8px; }
 
     main { padding: 20px 22px 60px; max-width: 1180px; margin: 0 auto; flex: 1; min-width: 0; }
-    /* Avec un menu latéral (gauche/droite), le contenu ne doit pas rester centré dans l'espace
-       restant - il doit coller au menu et utiliser toute la largeur disponible, sinon on se
-       retrouve avec deux grandes marges mortes de chaque côté sur les écrans larges. */
+    
     #app-shell.pos-left main, #app-shell.pos-right main { max-width: none; margin: 0; }
     .hidden { display: none !important; }
 
@@ -480,7 +442,6 @@
     .kpi-label { font-size: 12px; color: var(--text-mute); text-transform: uppercase; letter-spacing: .5px; }
     .kpi-value { font-size: 24px; font-weight: 800; margin-top: 6px; }
 
-    /* ===== Style "Détaillé" : grille dense, cartes compactes, tableaux resserrés - appliqué partout ===== */
     .card { padding: 12px; border-radius: 8px; }
     .kpi-label { font-size: 10px; letter-spacing: .06em; }
     .kpi-value { font-family: 'Space Grotesk', 'Segoe UI', sans-serif; font-size: 20px; margin-top: 3px; }
@@ -489,9 +450,9 @@
     #dash-section-kpis7j.grid, #dash-section-kpis30j .grid { grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); }
     table { font-size: 12px; }
     td, th { padding: 5px 6px; }
-    /* Réduit les animations (accessibilité / appareils plus lents) - préférence personnelle. */
+    
     body.animations-reduites * { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
-    /* Densité compacte des tableaux - préférence personnelle. */
+    
     body.densite-compacte td, body.densite-compacte th { padding: 2px 5px !important; font-size: 12px; }
     th { font-size: 10px; text-transform: uppercase; letter-spacing: .04em; color: var(--text-faint); font-weight: 600; }
     .settings-row { padding: 8px 0; }
@@ -591,8 +552,7 @@
     .profil-carte-bio { color: var(--text-mute); font-size: 13px; margin-top: 8px; max-width: 340px; margin-left: auto; margin-right: auto; }
     .toast { position: fixed; bottom: 20px; right: 20px; background: var(--bg-card2); border: 1px solid var(--border); border-radius: 10px; padding: 12px 18px; color: var(--text); z-index: 999; display: none; font-size: 13px; box-shadow: 0 8px 24px rgba(0,0,0,.4); max-width: 320px; }
     .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.6); display: flex; align-items: center; justify-content: center; z-index: 998; padding: 20px; }
-    /* Login en mode "plein écran" (vitrine désactivée) - fond opaque de l'app plutôt qu'un
-       voile sombre sur du vide, et pas de bouton fermer puisqu'il n'y a rien en dessous. */
+    
     #login-screen.plein-ecran { background: var(--bg); }
     #login-screen.plein-ecran #login-fermer-btn { display: none; }
     .modal-card { background: var(--bg-panel); border: 1px solid var(--border); border-radius: 16px; padding: 24px; width: 100%; max-width: 720px; max-height: 90vh; overflow-y: auto; }
@@ -603,12 +563,12 @@
     .filter-btn.active { background: var(--pink); color: white; }
     .filter-btn-danger { color: var(--red); }
     .subnav-separator { width: 1px; align-self: stretch; background: var(--border); margin: 0 4px; }
-    /* Masque tous les champs "Mot de passe maître" quand NeedMasterPassword=FALSE pour ce compte */
+    
     body.dispense-mdp-maitre .master-pwd-bloc { display: none !important; }
-    /* Masque tous les champs "Succursale" quand l'option "Création de succursale" est désactivée */
+    
     body.succursales-off .succursale-field { display: none !important; }
     .subnav-block { padding-bottom: 14px; border-bottom: 1px solid var(--border-soft); }
-    /* Master Settings façon Discord : barre latérale de catégories + panneau de contenu */
+    
     .ms-layout { display: flex; gap: 28px; align-items: flex-start; }
     .ms-sidebar { display: flex; flex-direction: column; gap: 2px; width: 200px; flex-shrink: 0; position: sticky; top: 20px; }
     .ms-sidebar-item { text-align: left; background: transparent; border: none; color: var(--text-mute); font-size: 14px; font-weight: 500; padding: 8px 10px; border-radius: 6px; cursor: pointer; transition: background .12s, color .12s; }
@@ -620,17 +580,15 @@
     .ms-content { flex: 1; min-width: 0; }
     .settings-group-titre { margin: 0 0 4px; font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: var(--text-faint); }
     .settings-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--border-soft); }
-    /* Sous-sections repliables de Master Settings - un seul style cohérent partout, au lieu de
-       longues pages plates où tout est empilé sans hiérarchie visuelle. */
+    
     .ms-groupe { border: 1px solid var(--border-soft); border-radius: 10px; margin-top: 16px; margin-bottom: 10px; overflow: hidden; }
     .ms-groupe:first-child { margin-top: 0; }
-    /* Poignée de glisser-déposer (mode "Glisser" du réordonnancement) - souris ET tactile via Pointer Events. */
+    
     .drag-handle { cursor: grab; touch-action: none; color: var(--text-mute); font-size: 16px; padding: 2px 8px; user-select: none; transition: color var(--anim-duree) var(--anim-easing), transform var(--anim-duree) var(--anim-easing); border-radius: 5px; }
     .drag-indicateur { position: fixed; height: 3px; background: var(--gold); border-radius: 2px; pointer-events: none; z-index: 3000; box-shadow: 0 0 6px var(--gold); display: none; transition: top .12s ease; }
     .drag-handle:hover { color: var(--pink); background: var(--bg-card2); }
     .drag-handle:active { cursor: grabbing; color: var(--gold); transform: scale(1.2); }
-    /* La ligne saisie se détache nettement : contour de couleur, léger fond, et pour les blocs
-       (pas les <tr>, qui ne supportent pas bien transform/box-shadow) un effet "soulevé" en plus. */
+    
     tr.en-glissement {
       background: var(--bg-card2); outline: 2px solid var(--pink); outline-offset: -2px;
     }
@@ -639,7 +597,7 @@
       box-shadow: 0 10px 24px rgba(0,0,0,.4); transform: scale(1.02); position: relative; z-index: 5;
       transition: transform .1s ease, box-shadow .1s ease;
     }
-    /* Relâchement : la ligne "atterrit" en douceur plutôt qu'un snap instantané à sa taille normale. */
+    
     div.en-relachement {
       transition: transform .18s cubic-bezier(.34,1.56,.64,1), box-shadow .18s ease, outline-color .18s ease;
     }
@@ -663,7 +621,6 @@
     .dashboard-layout.leaderboard-collapsed .dashboard-leaderboard { display: none; }
     .dashboard-layout.leaderboard-collapsed .dashboard-main { max-width: 900px; margin: 0 auto; }
 
-    /* Effet de survol : indique qu'un élément est sélectionnable, sans le sélectionner */
     nav button:not(.active):hover { background: var(--bg-card2); color: var(--text); }
     .filter-btn:not(.active):hover { background: var(--bg-card); color: var(--text); }
     .btn-ghost:hover { background: var(--bg-card); }
@@ -676,9 +633,7 @@
       align-items: center; justify-content: center; z-index: 2000; transition: opacity .25s;
     }
     #loading-overlay.hidden { opacity: 0; pointer-events: none; }
-    /* Anneau doré façon "comète" (dégradé qui s'estompe), pas un simple trait plat qui tourne —
-       et le monogramme de l'établissement qui pulse doucement au centre, pour que l'écran de
-       chargement porte vraiment l'identité de la place plutôt qu'un rond générique. */
+    
     .loading-spinner-wrap { position: relative; width: 64px; height: 64px; }
     .loading-spinner {
       width: 64px; height: 64px; border-radius: 50%;
@@ -720,13 +675,11 @@
     .progress-bar { height: 8px; border-radius: 4px; background: var(--bg-card2); overflow: hidden; margin-top: 4px; }
     .progress-fill { height: 100%; background: linear-gradient(90deg, var(--pink), var(--gold)); }
 
-    /* ===================== Adaptation mobile (téléphone) ===================== */
     @media (max-width: 768px) {
       body { font-size: 15px; }
       .login-card { width: 92vw; padding: 20px; }
       .brand { font-size: 22px !important; }
 
-      /* Le menu latéral devient une barre horizontale déroulante en haut, quelle que soit la position choisie */
       #app-shell { flex-direction: column; }
       #app-shell.pos-left nav, #app-shell.pos-right nav, #app-shell.pos-bottom nav {
         position: sticky; top: 65px; left: 0; width: 100%; height: auto; max-height: 64px;
@@ -743,7 +696,6 @@
 
       main { padding: 14px 12px 40px; max-width: 100%; }
 
-      /* Toutes les grilles passent en une seule colonne pour rester lisibles */
       .grid-2, .grid-3, .grid-4, .grid-5 { grid-template-columns: 1fr !important; }
       .ms-layout { flex-direction: column; }
       .ms-sidebar { flex-direction: row; overflow-x: auto; width: 100%; position: static; gap: 6px; padding-bottom: 6px; }
@@ -765,7 +717,6 @@
 </head>
 <body>
 
-  <!-- ===================== LOGIN ===================== -->
   <div id="vitrine-publique" class="hidden">
     <div class="vitrine-header-fixe">
       <div class="vitrine-header-contenu">
@@ -776,7 +727,7 @@
     </div>
 
     <div class="vitrine-corps">
-      <!-- Page : Accueil -->
+      
       <div id="vitrine-page-accueil" class="vitrine-page">
         <div class="vit-cadre">
           <div class="vit-cadre-inner">
@@ -797,7 +748,7 @@
           <div class="vit-carte-nav" onclick="allerPageVitrine('vip')">
             <div class="vit-icone">✦</div><h3 style="margin:0 0 6px;font-size:14px;letter-spacing:1px;">VIP</h3><div class="small">L'accès sur invitation</div>
           </div>
-          <div class="vit-carte-nav" onclick="allerPageVitrine('reserver')">
+          <div class="vit-carte-nav" id="vit-carte-nav-reserver" onclick="allerPageVitrine('reserver')">
             <div class="vit-icone">✦</div><h3 style="margin:0 0 6px;font-size:14px;letter-spacing:1px;">RÉSERVER</h3><div class="small">Une table t'attend</div>
           </div>
           <div class="vit-carte-nav" onclick="allerPageVitrine('apropos')">
@@ -806,14 +757,12 @@
         </div>
       </div>
 
-      <!-- Page : Horaires -->
       <div id="vitrine-page-horaires" class="vitrine-page hidden">
         <h2>Horaires</h2>
         <div class="horaires-statut-hero" id="horaires-statut-hero"></div>
         <div class="horaires-registre" id="vitrine-horaires"></div>
       </div>
 
-      <!-- Page : Carte -->
       <div id="vitrine-page-carte" class="vitrine-page hidden">
         <div class="grid grid-2" style="align-items:start;gap:30px;">
           <div class="carte-cadre">
@@ -832,13 +781,11 @@
         </div>
       </div>
 
-      <!-- Page : VIP -->
       <div id="vitrine-page-vip" class="vitrine-page hidden">
         <h2>Offres VIP</h2>
         <div class="grid grid-3" id="vitrine-vip"></div>
       </div>
 
-      <!-- Page : Réserver -->
       <div id="vitrine-page-reserver" class="vitrine-page hidden">
         <h2>Réserver une table</h2>
         <div class="small mb16">On te confirme par téléphone dès que possible.</div>
@@ -869,13 +816,11 @@
 
       </div>
 
-      <!-- Page : À propos -->
       <div id="vitrine-page-apropos" class="vitrine-page hidden">
         <h2>À propos</h2>
         <div class="small" id="vitrine-apropos" style="white-space:pre-line;max-width:700px;"></div>
       </div>
 
-      <!-- Page : Mon compte (client connecté seulement) -->
       <div id="vitrine-page-moncompte" class="vitrine-page hidden">
         <h2>Bonjour, <span id="moncompte-nom"></span></h2>
         <div id="moncompte-vip" class="mt16"></div>
@@ -893,7 +838,6 @@
         </div>
       </div>
 
-      <!-- Page : Contact -->
       <div id="vitrine-page-contact" class="vitrine-page hidden">
         <h2>Nous trouver</h2>
         <div class="small" id="vitrine-contact"></div>
@@ -958,7 +902,6 @@
     </div>
   </div>
 
-  <!-- ===================== APP ===================== -->
   <div id="app">
     <header>
       <div class="brand" style="font-size:20px;"><span id="brand-header" onclick="clicLogoEasterEgg()" style="cursor:pointer;user-select:none;">LEOPOLD'S LOUNGE BAR</span></div>
@@ -984,9 +927,9 @@
       </nav>
 
     <main>
-      <!-- Tableau de bord -->
+      
       <section id="tab-dashboard">
-        <!-- Vue dédiée : rôle Fisc - simple mais complet, tout ce dont le Fisc a besoin ici -->
+        
         <div id="dashboard-fisc-view" class="hidden">
           <h3 style="margin:0 0 6px;">Vue Fisc</h3>
           <div class="small mb16">Chiffre d'affaires, dépenses, Fisc et profit - par succursale, pour la période choisie.</div>
@@ -1000,7 +943,6 @@
           </div>
         </div>
 
-        <!-- Vue de repli : si le rôle n'a aucune section de Tableau de bord configurée, on montre ses propres stats -->
         <div id="dashboard-fallback-stats" class="hidden">
           <h3 style="margin:0 0 10px;">Mes stats</h3>
           <div class="flex mb10" id="dashboard-fallback-filtres"></div>
@@ -1118,10 +1060,9 @@
         </div>
             </div>
           </div>
-        </div> <!-- /dashboard-full-view -->
+        </div> 
       </section>
 
-      <!-- Shifts -->
       <section id="tab-shifts" class="hidden">
         <div class="card mb10" id="my-shift-card">
           <h2 style="margin-bottom:14px;">Mon shift</h2>
@@ -1136,7 +1077,6 @@
         </details>
       </section>
 
-      <!-- Ventes / Caisse -->
       <section id="tab-ventes" class="hidden">
         <div class="ms-layout">
         <div class="ms-sidebar" id="ventes-mode-boutons">
@@ -1183,7 +1123,6 @@
           </details>
         </div>
 
-        <!-- Cigares : catalogue synchronisé avec les cigares gérés dans Master Settings/La carte -->
         <div id="ventes-mode-cigares" class="hidden">
           <div class="grid grid-2">
             <div class="card">
@@ -1207,7 +1146,6 @@
           </div>
         </div>
 
-        <!-- Export : items custom créés par le Patron, prix libre à chaque fois, plafonné à 3000$ -->
         <div id="ventes-mode-export" class="hidden">
           <div class="grid grid-2">
             <div class="card">
@@ -1249,7 +1187,6 @@
         </div>
       </section>
 
-      <!-- Achats -->
       <section id="tab-achats" class="hidden">
         <div class="card">
           <h2>Nouvelle dépense</h2>
@@ -1284,10 +1221,6 @@
         </details>
       </section>
 
-      <!-- Paie -->
-      <!-- Stock -->
-      <!-- Employés -->
-      <!-- Patron : tout ce qui gère l'équipe, les rôles, les succursales, l'import/export -->
       <section id="tab-section-patron" class="hidden">
         <div class="ms-layout">
         <div class="ms-sidebar" id="patron-subnav">
@@ -1304,7 +1237,6 @@
         </div>
         <div class="ms-content">
 
-        <!-- Sous-onglet : Employés -->
         <div id="patron-sub-employes">
           <div class="card mb10">
             <div class="flex-between" id="sp-form-header" onclick="toggleAjoutEmployeForm()" style="cursor:pointer;">
@@ -1343,7 +1275,6 @@
           </div>
         </div>
 
-        <!-- Sous-onglet : Stats (par succursale + total) -->
         <div id="patron-sub-stats" class="hidden">
           <div class="card mb10">
             <div class="flex mb10" id="stats-succ-filtres"></div>
@@ -1352,7 +1283,6 @@
           <div class="grid grid-3" id="stats-succ-grille"></div>
         </div>
 
-        <!-- Sous-onglet : Absences -->
         <div id="patron-sub-absences" class="hidden">
           <div class="card">
             <h2>Demandes d'absence</h2>
@@ -1361,7 +1291,6 @@
           </div>
         </div>
 
-        <!-- Sous-onglet : Fisc -->
         <div id="patron-sub-fisc" class="hidden">
           <details class="ms-groupe" open>
             <summary>Configuration du Fisc<div class="small">Taux prélevé sur les revenus</div></summary>
@@ -1437,7 +1366,6 @@
           </details>
         </div>
 
-        <!-- Sous-onglet : Ventes Export (gestion des items custom d'export) -->
         <div id="patron-sub-ventesexport" class="hidden">
           <div class="card">
             <h2>Gérer les items d'export</h2>
@@ -1450,7 +1378,6 @@
           </div>
         </div>
 
-        <!-- Sous-onglet : Succursales (la gestion des Rôles a été déplacée dans Master Settings > Optimisation & Custom) -->
         <div id="patron-sub-roles" class="hidden">
           <div class="card succursale-field" style="max-width:480px;">
             <h2>Créer succursale</h2>
@@ -1464,7 +1391,6 @@
           </div>
         </div>
 
-        <!-- Sous-onglet : Suspensions -->
         <div id="patron-sub-suspensions" class="hidden">
           <div class="card mb10">
             <div class="flex-between mb10">
@@ -1492,7 +1418,6 @@
           </details>
         </div>
 
-        <!-- Sous-onglet : Paie -->
         <div id="patron-sub-paie" class="hidden">
           <div class="grid grid-2">
             <div class="card">
@@ -1526,7 +1451,6 @@
           </details>
         </div>
 
-        <!-- Sous-onglet : Contrats -->
         <div id="patron-sub-contrats" class="hidden">
           <div class="ms-layout">
           <div class="ms-sidebar">
@@ -1559,7 +1483,6 @@
           </div>
         </div>
 
-        <!-- Sous-onglet : Cigares -->
         <div id="patron-sub-cigares" class="hidden">
           <div class="card mb10">
             <h2>Ajouter un cigare</h2>
@@ -1579,12 +1502,10 @@
           </div>
         </div>
 
-        <!-- Sous-onglet : Import -->
         </div>
         </div>
       </section>
 
-      <!-- Admin : réservé aux comptes ayant SeeAdminSection = TRUE dans le Google Sheet -->
       <section id="tab-admin" class="hidden">
         <div class="ms-layout">
           <div class="ms-sidebar">
@@ -1667,7 +1588,6 @@
         </div>
       </section>
 
-      <!-- Claque : gag interne, réservé aux employés ayant la case Claque=TRUE dans la BDD -->
       <section id="tab-claque" class="hidden">
         <div class="grid grid-2 mb10">
           <div class="card" style="text-align:center;padding:36px 20px;position:relative;overflow:hidden;">
@@ -1691,7 +1611,6 @@
         </div>
       </section>
 
-      <!-- Articles -->
       <section id="tab-articles" class="hidden">
         <div class="ms-layout">
         <div class="ms-sidebar">
@@ -1724,7 +1643,6 @@
         </div>
       </section>
 
-      <!-- Stock : niveaux actuels par succursale + historique des mouvements -->
       <section id="tab-stock" class="hidden">
         <div class="card mb10">
           <div class="flex-between mb10"><h2 style="margin:0;">Niveaux de stock</h2></div>
@@ -1740,8 +1658,6 @@
         </details>
       </section>
 
-      <!-- VIP : membres avec compte à rebours d'expiration + offres personnalisables (Patron) -->
-      <!-- Gestion client : compte client, réservations, VIP réunis sous un même toit -->
       <section id="tab-gestion-client" class="hidden">
         <div class="ms-layout">
         <div class="ms-sidebar" id="gc-subnav">
@@ -1751,7 +1667,6 @@
         </div>
         <div class="ms-content">
 
-        <!-- Sous-onglet : Compte client -->
         <div id="gc-sub-comptes-clients">
           <div class="card mb10">
             <h2>Créer un compte client</h2>
@@ -1777,7 +1692,6 @@
           </div>
         </div>
 
-        <!-- Sous-onglet : Réservations -->
         <div id="gc-sub-reservations" class="hidden">
           <div class="card">
             <div class="flex-between mb10"><h2 style="margin:0;">Réservations</h2><div class="flex" id="resa-filtre-boutons"></div></div>
@@ -1786,7 +1700,6 @@
           </div>
         </div>
 
-        <!-- Sous-onglet : VIP -->
         <div id="gc-sub-vip" class="hidden">
           <div class="ms-layout">
           <div class="ms-sidebar" id="vip-mode-boutons">
@@ -1866,7 +1779,6 @@
         </div>
       </div>
 
-      <!-- Objectifs -->
       <section id="tab-objectifs" class="hidden">
         <div class="ms-layout">
         <div class="ms-sidebar">
@@ -1899,7 +1811,6 @@
         </div>
       </section>
 
-      <!-- Agenda : visible à tous, création réservée à Patron/Gérant/Community Manager -->
       <section id="tab-agenda" class="hidden">
         <div class="ms-layout">
           <div class="ms-sidebar">
@@ -1939,7 +1850,6 @@
         </div>
       </section>
 
-      <!-- Chat : salon commun, visible et utilisable par tous -->
       <section id="tab-chat" class="hidden">
         <div class="ms-layout">
           <div class="ms-sidebar" id="chat-mode-boutons">
@@ -1981,7 +1891,6 @@
         </div>
       </section>
 
-      <!-- DJ : liens YouTube à passer dans le PMMS en jeu -->
       <section id="tab-dj" class="hidden">
         <div class="card mb10">
           <h2>Ajouter un lien</h2>
@@ -1998,22 +1907,19 @@
         </div>
       </section>
 
-      <!-- Rapports Entreprise : réservé à Patron, Co-Patron·ne et Fisc -->
       <section id="tab-rapports-entreprise" class="hidden">
-        <!-- Écran 1 : accueil + sélection Global/Nord/Sud -->
+        
         <div id="rapports-selection-ecran">
           <h2 style="margin:0 0 6px;">Bienvenue, <span id="rapports-bienvenue-nom"></span></h2>
           <div class="small mb16">Choisis la vue que tu veux consulter.</div>
           <div class="grid grid-3" id="rapports-selection-cartes"></div>
         </div>
 
-        <!-- Écran 2 : chargement des chiffres -->
         <div id="rapports-chargement-ecran" class="hidden" style="text-align:center;padding:60px 0;">
           <div class="loading-spinner" style="margin:0 auto;"></div>
           <div class="small mt10">Les chiffres arrivent, merci de patienter...</div>
         </div>
 
-        <!-- Écran 3 : détail (recherche, filtres, tableau) -->
         <div id="rapports-detail-ecran" class="hidden">
           <button class="btn-ghost mb10" id="rapports-retour-btn" onclick="retourSelectionRapports()">← Retour</button>
           <div class="card mb10">
@@ -2059,8 +1965,6 @@
         </div>
       </section>
 
-      <!-- Contrats : lié aux avocats et au Fisc - mêmes accès que Rapports Entreprise -->
-      <!-- Master Settings : réservé au détenteur du mot de passe maître -->
       <section id="tab-master-settings" class="hidden">
         <div id="master-settings-gate" class="card">
           <h2>Master Settings</h2>
@@ -2280,6 +2184,10 @@
               <div><div class="settings-row-label">Système client</div><div class="small">Désactive Compte client, Réservations, et l'inscription libre depuis la vitrine. VIP reste géré même désactivé.</div></div>
               <label class="remember-label"><input type="checkbox" id="ms-page-client-active"> <span>Activer</span></label>
             </div>
+            <div class="settings-row" style="border-bottom:none;">
+              <div><div class="settings-row-label">Réservations</div><div class="small">Désactive uniquement les réservations - Compte client reste actif. Coupe complètement la page, les alertes et le traitement, même si Système client ci-dessus est activé.</div></div>
+              <label class="remember-label"><input type="checkbox" id="ms-reservations-active"> <span>Activer</span></label>
+            </div>
             <div class="master-pwd-bloc">
               <label>Mot de passe maître</label>
               <div class="password-wrap" style="max-width:260px;">
@@ -2346,14 +2254,9 @@
         </div>
       </section>
     </main>
-    </div> <!-- /app-shell -->
+    </div> 
   </div>
 
-  <!-- ===================== MON PROFIL (modale) ===================== -->
-  <!-- ===================== MODIFIER UN EMPLOYÉ (modale) ===================== -->
-  <!-- ===================== CONSO PERSO (modale) ===================== -->
-  <!-- ===================== MODIFIER UN ARTICLE (modale) ===================== -->
-  <!-- ===================== ROLES INCLUS DANS LE CLASSEMENT (modale) ===================== -->
   <div id="fiche-equipe-modal" class="modal-overlay hidden">
     <div class="modal-card" style="max-width:380px;">
       <button class="btn-ghost" style="float:right;" onclick="fermerFicheEquipe()">Fermer</button>
@@ -2420,8 +2323,6 @@
     </div>
   </div>
 
-  <!-- ===================== STATS D'UN EMPLOYÉ (modale, vue Patron/Gérant) ===================== -->
-  <!-- ===================== NOUVEL ÉVÉNEMENT (modale, ouverte en cliquant un jour) ===================== -->
   <div id="reset-confirmation-modal" class="modal-overlay hidden">
     <div class="modal-card" style="max-width:420px;">
       <h2 style="margin-top:0;">Confirmer la réinitialisation</h2>
@@ -2617,7 +2518,6 @@
     </div>
   </div>
 
-  <!-- ===================== HORAIRES D'OUVERTURE (modale) ===================== -->
   <div id="horaires-modal" class="modal-overlay hidden">
     <div class="modal-card">
       <div class="flex-between mb10">
@@ -2713,7 +2613,6 @@
         </div>
         <div class="ms-content">
 
-      <!-- Sous-section : Mes stats -->
       <div id="profil-section-stats">
         <div class="flex mb10" id="profil-filtres"></div>
         <div class="grid grid-3 mb10">
@@ -2741,7 +2640,6 @@
         </div>
       </div>
 
-      <!-- Sous-section : Paramètres -->
       <div id="profil-section-parametres" class="hidden">
         <input id="profil-recherche-input" placeholder="Rechercher un réglage... (ex: thème, mot de passe, son)" oninput="filtrerProfilParametres(this.value)" style="margin-bottom:14px;">
 
@@ -2833,7 +2731,6 @@
     </div>
   </div>
 
-  <!-- ===================== ÉCRAN DE CHARGEMENT ===================== -->
   <div id="loading-overlay">
     <div class="loading-spinner-wrap">
       <div class="loading-spinner"></div>
@@ -2850,9 +2747,6 @@
   <div class="toast" id="toast"></div>
   <div id="notif-claque-attente" class="hidden" style="position:fixed;bottom:20px;left:20px;background:var(--bg-card2);border:1px solid var(--gold);border-radius:10px;padding:12px 18px;color:var(--gold);z-index:999;font-size:13px;font-weight:600;box-shadow:0 8px 24px rgba(0,0,0,.4);"></div>
 
-  <!-- Écran plein écran, non-fermable, affiché dès qu'un compte suspendu OU viré est détecté (à la
-       connexion, à la reconnexion auto, ou en pleine session via le heartbeat). Contenu rempli
-       dynamiquement par afficherEcranSuspendu() selon le cas. -->
   <div id="suspendu-overlay" class="hidden" style="position:fixed;inset:0;background:#7a0d16;z-index:5000;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;">
     <div id="suspendu-icone"></div>
     <div style="font-size:28px;font-weight:800;color:#fff;letter-spacing:1px;" id="suspendu-titre">VOTRE COMPTE EST SUSPENDU</div>
@@ -2874,9 +2768,7 @@
     };
   </script>
   <script>
-    // Priorité absolue sur la modale de confirmation (Ventes/Dépenses) : Entrée confirme, Échap ou
-    // Retour arrière annule - capturé AVANT le onkeydown du champ commentaire en dessous (capture:true),
-    // sinon les deux se déclenchaient l'un après l'autre pour la même touche.
+
     document.addEventListener('keydown', function (e) {
       const modal = document.getElementById('confirmation-action-modal');
       if (!modal || modal.classList.contains('hidden')) return;
@@ -2889,9 +2781,7 @@
         fermerConfirmationAction();
       }
     }, true);
-    // Clavier global : Entrée valide le formulaire actif (comme envoyer un message), Échap ou
-    // Retour arrière (hors saisie de texte) ferme une modale ouverte ou revient en arrière si un
-    // bouton "← Retour" est visible - pas besoin de le recâbler manuellement dans chaque formulaire.
+
     document.addEventListener('keydown', function (e) {
       const el = document.activeElement;
       const dansChampTexte = !!el && (el.tagName === 'TEXTAREA' || (el.tagName === 'INPUT' && ['checkbox', 'radio', 'button', 'submit', 'file'].indexOf(el.type) === -1) || el.isContentEditable);
@@ -2924,8 +2814,7 @@
             return;
           }
         }
-        // Rien à fermer ni à "reculer" - on revient au Tableau de bord, comme un vrai raccourci
-        // d'échappée depuis n'importe quel onglet (Mon Profil, Master Settings, Admin, etc.).
+
         if (typeof ONGLET_ACTUEL !== 'undefined' && ONGLET_ACTUEL && ONGLET_ACTUEL !== 'dashboard') {
           e.preventDefault();
           switchTab('dashboard', document.getElementById('nav-tab-dashboard'));
@@ -2934,15 +2823,12 @@
     });
   </script>
   <script>
-    // Doit toujours correspondre exactement au repère affiché dans l'en-tête ci-dessus,
-    // et à VERSION_ACTUELLE dans Code.gs - sert à détecter une nouvelle version déployée.
-    const VERSION_CLIENT = 'build-2026-08-03-J';
-    // Transmise par le serveur (doGet) via ScriptApp.getService().getUrl() - pas besoin de la lire
-    // depuis la fenêtre du haut, ce qui est bloqué entre domaines différents.
+
+    const VERSION_CLIENT = 'build-2026-08-03-L';
+
     const APP_URL = (function () {
       const brut = '<?= appUrl ?>';
-      // Si servi tel quel (Netlify, etc.), ce scriptlet Apps Script n'est jamais évalué - on retombe
-      // sur l'URL de la page actuelle plutôt que de garder ce texte littéral inutilisable.
+
       return brut.indexOf('<?') === 0 ? window.location.href.split('?')[0] : brut;
     })();
     let DATA = null;
@@ -2953,11 +2839,6 @@
 
     const isManagement = (permission) => permission === 'Direction';
 
-    /* ===================== Sécurité "rôle Admin" =====================
-       Un compte Admin (rôle OU permission) voit tout mais ne peut RIEN modifier nulle part -
-       ni dans Master Settings, ni ailleurs dans l'app. Cette règle est prioritaire sur tout le
-       reste : on l'applique à un seul endroit (le google.script.run global) plutôt que de
-       modifier chacun des dizaines de boutons de l'application. */
     const FONCTIONS_LECTURE_SEULE = new Set([
       'getInitialData', 'getArticlesAvecStock', 'getStockActuel', 'getMouvementsStock', 'getHistoriqueSuspensions', 'getHistoriqueSuspensionsEmploye', 'getImpots', 'getSubventions', 'getDashboardData', 'getTauxFiscActuel', 'getNomEntrepriseActuel',
       'getProfilStats', 'getStatsSuccursales', 'getRapportEntreprise', 'getContrats', 'getEvenements',
@@ -2967,15 +2848,14 @@
       'verifierMotDePasseMaitre', 'masterPasswordConfigured', 'identifiantDisponible', 'peutVoirMasterSettings',
       'loginAvecIdentifiant'
     ]);
-    // Modération : pas de la compta, donc autorisé même pour un compte Admin (bloqué partout ailleurs).
+    
     const FONCTIONS_MODERATION = new Set([
       'supprimerMessageChat', 'supprimerMessagePrive', 'suspendreCompte', 'muterEmploye', 'logActivite', 'envoyerPing', 'heartbeatGeneral', 'setConfirmationsActives', 'setVitrineAfficherPrix', 'setThemeVitrine'
     ]);
     function estRoleAdminLectureSeule() {
       return !!CURRENT_USER && !!DATA && ((DATA.rolesAdminLectureSeule || ['Admin']).indexOf(CURRENT_USER['Rôle']) !== -1 || CURRENT_USER.Permission === 'Admin');
     }
-    // Enveloppe google.script.run dans un Proxy transparent : chaque chaîne .withSuccessHandler(...).withFailureHandler(...).xxx(...)
-    // continue de fonctionner exactement pareil, sauf pour le rôle Admin où on bloque juste avant l'appel réel.
+
     function envelopperAppelServeur_(cible) {
       return new Proxy(cible, {
         get: function (obj, prop) {
@@ -2985,8 +2865,7 @@
           const original = obj[prop];
           if (typeof original !== 'function') return original;
           return function (...args) {
-            // Priorité absolue : un compte Admin ne peut rien faire dans la compta, SAUF la modération
-            // (supprimer un message) qui n'est pas de la compta et reste donc autorisée.
+
             if (typeof prop === 'string' && !FONCTIONS_LECTURE_SEULE.has(prop) && !FONCTIONS_MODERATION.has(prop) && estRoleAdminLectureSeule()) {
               showToast('Accès en lecture seule avec ce rôle - aucune action possible.', true);
               return;
@@ -3000,7 +2879,6 @@
       google.script.run = envelopperAppelServeur_(google.script.run);
     }
 
-    /* ===================== Traductions (i18n) ===================== */
     const TRANSLATIONS = {
       fr: {
         'nav.dashboard': 'Tableau de bord', 'nav.shifts': 'Shifts', 'nav.ventes': 'Ventes',
@@ -3080,9 +2958,8 @@
       renderParametresLangueBoutons();
     }
 
-    /* ===================== Thèmes ===================== */
     const THEMES = [['leopolds', 'theme.leopolds'], ['pixelar', 'theme.pixelar'], ['sandystrip', 'theme.sandystrip'], ['clair', 'theme.clair']];
-    // Mini-palette + touche typographique de chaque thème, pour l'aperçu visuel dans Mon Profil.
+    
     const THEMES_APERCU = {
       leopolds: { bg: '#000000', accent: '#e8b923', gold: '#ffcf40', police: "'Playfair Display', Georgia, serif", desc: 'Cabaret noir et or' },
       pixelar: { bg: '#000000', accent: '#22c55e', gold: '#f5c451', police: "'VT323', monospace", desc: 'Rétro terminal, néon' },
@@ -3129,7 +3006,7 @@
       const actif = document.getElementById('pref-son-vente').checked;
       setPref_('sandystrip_son_vente', actif ? '1' : '0');
       document.getElementById('profil-son-choix-ligne').classList.toggle('hidden', !actif);
-      if (actif) jouerSonVente(); // petit aperçu immédiat
+      if (actif) jouerSonVente(); 
     }
     const CHOIX_SON_DISPONIBLES = [['auto', 'Auto'], ['cloche', 'Cloche'], ['ding', 'Ding'], ['pop', 'Pop'], ['grave', 'Grave']];
     function renderProfilSonChoixBoutons() {
@@ -3143,7 +3020,7 @@
     function choisirSonVente(choix) {
       setPref_('sandystrip_son_choix', choix);
       renderProfilSonChoixBoutons();
-      jouerSonVente(); // aperçu immédiat du son choisi
+      jouerSonVente(); 
     }
     function changerPrefAnimationsReduites() {
       const actif = document.getElementById('pref-animations-reduites').checked;
@@ -3164,14 +3041,12 @@
       document.body.classList.toggle('densite-compacte', densite === 'compact');
       renderProfilDensiteBoutons();
     }
-    // Applique les préférences visuelles au tout premier chargement (avant même la connexion),
-    // pour éviter un flash "normal" qui bascule ensuite en compact/animations réduites.
+
     function appliquerPreferencesVisuellesGlobales() {
       document.body.classList.toggle('densite-compacte', getPref_('sandystrip_densite', 'confortable') === 'compact');
       document.body.classList.toggle('animations-reduites', getPref_('sandystrip_animations_reduites', '0') === '1');
     }
-    // Filtre les réglages de Mon Profil par mot-clé, comme dans Master Settings - et vérifie aussi
-    // les mots-codes cachés au passage (même mécanisme que la recherche de Master Settings).
+
     function filtrerProfilParametres(query) {
       verifierMotCodeCache_(query);
       const q = (query || '').trim().toLowerCase();
@@ -3196,17 +3071,15 @@
       if (!nouveauMdp || nouveauMdp.length < 3) { errEl.textContent = 'Choisis un mot de passe d\'au moins 3 caractères.'; return; }
       google.script.run.withSuccessHandler(function () {
         document.getElementById('profil-nouveau-mdp').value = '';
-        // Si l'Auto Login est actif sur cet appareil, on met aussi à jour la session sauvegardée avec le nouveau mot de passe.
+        
         sauvegarderSessionAutoLogin(CURRENT_USER.Identifiant, nouveauMdp);
         showToast('Mot de passe mis à jour.');
       }).withFailureHandler(function (err) { errEl.textContent = err.message || String(err); })
         .updateIdentifiants(CURRENT_USER.ID, '', nouveauMdp, CURRENT_USER.sessionToken);
     }
-    // Chaque thème a sa propre "couleur sonore" - même mécanisme (Web Audio, pas de fichier à
-    // charger), juste des paramètres différents selon l'ambiance : chaud et posé pour Leopold's,
-    // bip rétro pour Pixelar, stab énergique pour Sandy Strip, ping minimal pour Clair.
+
     const SONS_VENTE_DISPONIBLES = {
-      auto: null, // reprend le comportement par thème, comme avant
+      auto: null, 
       cloche: { type: 'sine', freq: 880, duree: 0.5, volume: 0.14 },
       ding: { type: 'triangle', freq: 1300, duree: 0.15, volume: 0.13 },
       pop: { type: 'square', freq: 700, duree: 0.08, volume: 0.12 },
@@ -3219,7 +3092,7 @@
         let reglage = SONS_VENTE_DISPONIBLES[choix];
         const theme = document.documentElement.getAttribute('data-theme') || 'leopolds';
         if (!reglage) {
-          // "Auto" : le son dépend du thème actif, comme avant.
+          
           if (theme === 'pixelar') reglage = { type: 'square', freq: 1046, duree: 0.12, volume: 0.12 };
           else if (theme === 'sandystrip') reglage = { type: 'sawtooth', freq: 660, duree: 0.22, volume: 0.16 };
           else if (theme === 'clair') reglage = { type: 'sine', freq: 1200, duree: 0.1, volume: 0.08 };
@@ -3230,25 +3103,23 @@
         const gain = ctx.createGain();
         osc.type = reglage.type;
         osc.frequency.value = reglage.freq;
-        if (choix === 'auto' && theme === 'sandystrip') osc.frequency.exponentialRampToValueAtTime(reglage.freq * 1.5, ctx.currentTime + 0.08); // petit "stab" montant
+        if (choix === 'auto' && theme === 'sandystrip') osc.frequency.exponentialRampToValueAtTime(reglage.freq * 1.5, ctx.currentTime + 0.08); 
         gain.gain.setValueAtTime(reglage.volume, ctx.currentTime);
         gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + reglage.duree);
         osc.connect(gain); gain.connect(ctx.destination);
         osc.start(); osc.stop(ctx.currentTime + reglage.duree);
-      } catch (e) { /* audio indisponible, tant pis */ }
+      } catch (e) {  }
     }
-    // Un vrai son différent par catégorie, pas juste le même bip recyclé partout - pour qu'on
-    // reconnaisse à l'oreille si c'est une réservation, un message ou une demande RH, sans même
-    // regarder l'écran.
+
     function jouerSonNotification(categorie) {
       const REGLAGES = {
-        // Réservations : deux notes montantes, chaleureuses (façon "carillon d'accueil").
+        
         reservations: { freqs: [523, 659], type: 'sine', ecart: 0.11, duree: 0.32, volume: 0.16 },
-        // Messages privés : une seule note douce et brève, discrète comme une notif de chat.
+        
         messages: { freqs: [740], type: 'sine', ecart: 0, duree: 0.18, volume: 0.14 },
-        // Chat général : deux petites notes rapides et légères.
+        
         chat: { freqs: [880, 1046], type: 'triangle', ecart: 0.06, duree: 0.14, volume: 0.11 },
-        // RH (absences) : ton plus grave et posé, moins "festif" - une demande administrative.
+        
         rh: { freqs: [392, 494], type: 'square', ecart: 0.14, duree: 0.22, volume: 0.09 }
       };
       const reglage = REGLAGES[categorie] || { freqs: [660, 880], type: 'sine', ecart: 0.12, duree: 0.3, volume: 0.18 };
@@ -3264,10 +3135,9 @@
           osc.connect(gain); gain.connect(ctx.destination);
           osc.start(debut); osc.stop(debut + reglage.duree);
         });
-      } catch (e) { /* audio indisponible, tant pis */ }
+      } catch (e) {  }
     }
-    // Un vrai bruit de "claque" plutôt qu'un bip : un court burst de bruit blanc filtré,
-    // avec une décroissance très rapide façon "thwack".
+
     function jouerSonClaque() {
       try {
         const ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -3290,31 +3160,23 @@
         gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duree);
         bruit.connect(filtre); filtre.connect(gain); gain.connect(ctx.destination);
         bruit.start();
-      } catch (e) { /* audio indisponible, tant pis */ }
+      } catch (e) {  }
     }
     let DERNIER_NB_ABSENCES_ATTENTE = null;
     let DERNIER_NB_RESA_ATTENTE = null;
-    /* ===================== DataStore : couche d'abstraction (préparation passive à un futur backend temps réel) =====================
-       Tout ce qui est "bavard" (présence, chat, absences, conversations privées) passe par ce point d'entrée unique.
-       Le jour où on bascule vers un vrai backend temps réel, seul l'intérieur de cette fonction change - pas les appelants. */
+    
     const DataStore = {
       heartbeat: function (onResult) {
         if (!CURRENT_USER) return;
         google.script.run.withSuccessHandler(onResult).withFailureHandler(function (err) {
-          // Avant, les échecs du heartbeat étaient totalement silencieux - un souci passager côté
-          // serveur (déploiement pas encore propagé, quota, etc.) empêchait alors la détection de
-          // suspension de tourner, sans que rien ne le signale. Ça reste discret pour ne pas spammer,
-          // mais au moins visible dans la console pour diagnostiquer.
+
           console.warn('[SANDY STRIP] Échec du heartbeat :', err && (err.message || err));
         }).heartbeatGeneral(CURRENT_USER.ID, CURRENT_USER['Nom RP']);
       }
     };
     function surveillanceGenerale() {
       DataStore.heartbeat(function (resultat) {
-        // Suspension/renvoi détecté en pleine session (pas besoin d'attendre une action qui échoue) :
-        // écran rouge immédiat, prioritaire sur tout le reste. Et si la suspension est levée
-        // (ex: corrigée directement dans la BDD), on le recache automatiquement au sondage suivant
-        // - avant, rien ne remettait l'écran à zéro une fois affiché.
+
         const overlaySuspendu = document.getElementById('suspendu-overlay');
         if (resultat.suspendu || resultat.vire) {
           afficherEcranSuspendu({ vire: resultat.vire, raison: resultat.raison, jusqua: resultat.jusqua });
@@ -3325,8 +3187,7 @@
           showToast('Ton compte a été réactivé.');
         }
         DATA.absences = resultat.absences;
-        // Popup + bip dès qu'une nouvelle réservation "En attente" apparaît - pour tout le staff,
-        // pas juste Patron, puisque Gestion client est accessible plus largement.
+
         if (CURRENT_USER.typeCompte !== 'client' && typeof resultat.reservationsEnAttente === 'number') {
           if (DERNIER_NB_RESA_ATTENTE !== null && resultat.reservationsEnAttente > DERNIER_NB_RESA_ATTENTE) {
             jouerSonNotification('reservations');
@@ -3372,7 +3233,6 @@
       });
     }
 
-    /* ===================== Notifications (cloche) ===================== */
     function idsNotifVues() {
       try { return JSON.parse(localStorage.getItem('sandystrip_notifs_vues') || '[]'); } catch (e) { return []; }
     }
@@ -3418,9 +3278,7 @@
           cible: function () { switchTab('dashboard', document.getElementById('nav-tab-dashboard')); }
         });
       });
-      // Messages privés - un par conversation ayant un message plus récent que la dernière fois
-      // qu'on l'a ouverte ou marquée vue (id inclut la date du dernier message : un nouveau message
-      // change l'id, donc redevient "non vu" même si l'ancien avait déjà été cliqué).
+
       (DATA.conversations || []).forEach(c => {
         const id = 'mp-' + c.autreId + '-' + c.dernierMessageDate;
         if (vues.indexOf(id) !== -1) return;
@@ -3439,8 +3297,7 @@
         if (notifs.length === 0) {
           el.innerHTML = '<div class="small" style="padding:10px;">Aucune notification pour l\'instant.</div>';
         } else {
-          // Regroupées par catégorie - un en-tête avec compteur seulement s'il y en a plusieurs
-          // du même type, sinon la carte s'affiche seule avec juste son étiquette de catégorie.
+
           const categories = [];
           const parCategorie = {};
           notifs.forEach((n, i) => {
@@ -3510,7 +3367,7 @@
     function afficherChargement(message) {
       document.getElementById('loading-text').textContent = message || 'Chargement...';
       document.getElementById('loading-overlay').classList.remove('hidden');
-      // Filet de sécurité : jamais bloqué plus de 8 secondes, peu importe la cause d'un éventuel blocage.
+      
       clearTimeout(TIMEOUT_LOADING_OVERLAY);
       TIMEOUT_LOADING_OVERLAY = setTimeout(masquerChargement, 8000);
     }
@@ -3539,7 +3396,7 @@
           const sep = decode.indexOf(':');
           if (sep !== -1) CONNEXION_AUTO = { identifiant: decode.slice(0, sep), motdepasse: decode.slice(sep + 1) };
         }
-      } catch (e) { /* jeton invalide, on ignore et on affiche le login normal */ }
+      } catch (e) {  }
       google.script.run.withSuccessHandler(onDataLoaded).withFailureHandler(function (err) {
         masquerChargement();
         onError(err);
@@ -3548,7 +3405,7 @@
       try {
         const saved = localStorage.getItem('sandystrip_saved_identifiant');
         if (saved) document.getElementById('login-identifiant').value = saved;
-      } catch (e) { /* localStorage indisponible, tant pis */ }
+      } catch (e) {  }
     };
 
     function onDataLoaded(data) {
@@ -3563,7 +3420,7 @@
         if (!localStorage.getItem('sandystrip_theme') && data.themeParDefaut) {
           document.documentElement.setAttribute('data-theme', data.themeParDefaut);
         }
-      } catch (e) { /* localStorage indisponible, tant pis */ }
+      } catch (e) {  }
       if (CONNEXION_AUTO) {
         afficherChargement('Connexion automatique...');
         google.script.run.withSuccessHandler(function (employe) {
@@ -3576,21 +3433,20 @@
         }).loginAvecIdentifiant(CONNEXION_AUTO.identifiant, CONNEXION_AUTO.motdepasse);
         return;
       }
-      // Auto Login persistant : reconnecte automatiquement au dernier compte utilisé sur cet
-      // appareil, si l'option est activée dans Master Settings et qu'une session a été sauvegardée.
+
       if (data.autoLoginActif) {
         let session = null;
-        try { session = JSON.parse(localStorage.getItem('sandystrip_auto_login') || 'null'); } catch (e) { /* ignore */ }
+        try { session = JSON.parse(localStorage.getItem('sandystrip_auto_login') || 'null'); } catch (e) {  }
         if (session && session.identifiant && session.motdepasse) {
           afficherChargement('Reconnexion automatique...');
           google.script.run.withSuccessHandler(function (employe) {
             apresConnexionReussie(employe);
           }).withFailureHandler(function (err) {
             const msg = (err && (err.message || String(err))) || '';
-            try { localStorage.removeItem('sandystrip_auto_login'); } catch (e) { /* ignore */ }
+            try { localStorage.removeItem('sandystrip_auto_login'); } catch (e) {  }
             const lower = msg.toLowerCase();
             if (lower.indexOf('suspendu') !== -1 || lower.indexOf('viré') !== -1) { afficherEcranSuspendu({ vire: lower.indexOf('viré') !== -1, detailBrut: msg }); return; }
-            // Identifiants sauvegardés obsolètes (mot de passe changé, compte supprimé...) : on efface et on affiche le login normal.
+            
             masquerChargement();
             afficherEcranLoginNormal();
           }).loginAvecIdentifiant(session.identifiant, session.motdepasse);
@@ -3603,21 +3459,15 @@
 
     function sauvegarderSessionAutoLogin(identifiant, motdepasse) {
       if (!DATA || !DATA.autoLoginActif) return;
-      try { localStorage.setItem('sandystrip_auto_login', JSON.stringify({ identifiant: identifiant, motdepasse: motdepasse })); } catch (e) { /* ignore */ }
+      try { localStorage.setItem('sandystrip_auto_login', JSON.stringify({ identifiant: identifiant, motdepasse: motdepasse })); } catch (e) {  }
     }
 
-    // Vitrine publique : première chose vue par quiconque ouvre le lien, sans connexion. Un vrai
-    // bouton "Se connecter" en haut donne accès à l'écran de connexion staff habituel.
-    // Remet le thème personnel (ou celui par défaut du Patron) en place - utilisé en quittant la
-    // vitrine publique, qui a son propre thème indépendant choisi dans Master Settings.
     function restaurerThemePersonnel_() {
       let pref = null;
-      try { pref = localStorage.getItem('sandystrip_theme'); } catch (e) { /* ignore */ }
+      try { pref = localStorage.getItem('sandystrip_theme'); } catch (e) {  }
       document.documentElement.setAttribute('data-theme', pref || (DATA && DATA.themeParDefaut) || 'leopolds');
     }
-    // Calcule si c'est ouvert MAINTENANT (pas juste "aujourd'hui") - gère le cas d'une fermeture
-    // après minuit (ex: ouvert 18:00–02:00), où on peut encore être "ouvert" tôt le matin grâce
-    // aux horaires d'HIER soir qui débordent sur aujourd'hui.
+
     function calculerStatutOuvertureVitrine_(horaires) {
       const versMinutes = hhmm => {
         const p = String(hhmm || '').split(':').map(Number);
@@ -3717,8 +3567,9 @@
 
       const estClientConnecte = !!CURRENT_USER && CURRENT_USER.typeCompte === 'client';
       const pageClientActive = DATA.pageClientActive !== false;
+      const reservationsActives = DATA.reservationsActives !== false;
       const pagesNav = [['accueil', 'Accueil'], ['horaires', 'Horaires'], ['carte', 'La carte'], ['vip', 'VIP']];
-      if (pageClientActive) pagesNav.push(['reserver', 'Réserver']);
+      if (pageClientActive && reservationsActives) pagesNav.push(['reserver', 'Réserver']);
       if (aproposDisponible) pagesNav.push(['apropos', 'À propos']);
       if (contactDisponible) pagesNav.push(['contact', 'Contact']);
       if (estClientConnecte) pagesNav.push(['moncompte', 'Mon compte']);
@@ -3726,8 +3577,6 @@
         `<span class="vitrine-nav-lien" id="vitrine-nav-${p[0]}" onclick="allerPageVitrine('${p[0]}')">${p[1]}</span>`
       ).join('');
 
-      // En-tête : "Se connecter" pour un visiteur, ou le nom + Se déconnecter pour un client connecté
-      // - la vitrine reste la même page dans les deux cas, seule cette zone change.
       document.getElementById('vitrine-header-action').innerHTML = estClientConnecte
         ? `<div class="flex" style="align-items:center;gap:12px;"><span class="small">Bonjour, ${escapeHtml(CURRENT_USER.Prénom || CURRENT_USER.Nom)}</span><button class="btn-ghost" onclick="logout()">Se déconnecter</button></div>`
         : '<button class="btn-primary" onclick="ouvrirEcranConnexion()">Se connecter</button>';
@@ -3745,8 +3594,7 @@
           }
         }).withFailureHandler(function () {}).getMaFicheVip(CURRENT_USER.ID);
       }
-      // Le suivi de réservation vaut pour TOUT compte connecté, employé ou client - dès qu'une
-      // réservation est faite (peu importe qui l'a faite), on doit pouvoir en suivre le statut.
+
       if (CURRENT_USER) {
         chargerStatutReservationClient_();
       } else {
@@ -3758,8 +3606,7 @@
       document.getElementById('vitrine-publique').classList.remove('hidden');
       allerPageVitrine('accueil');
     }
-    // Change de "page" au sein de la vitrine (une seule visible à la fois, comme un vrai site avec
-    // plusieurs pages) - ici en changeant simplement quel bloc est affiché, sans recharger la page.
+
     function allerPageVitrine(page) {
       if (!antispamNavigation_()) return;
       const cible = document.getElementById('vitrine-page-' + page);
@@ -3775,7 +3622,7 @@
         document.querySelectorAll('.vitrine-page').forEach(el => el.classList.add('hidden'));
         cible.classList.remove('hidden');
         cible.classList.add('vit-entree-depart');
-        void cible.offsetWidth; // force le navigateur à appliquer l'état de départ avant de le retirer
+        void cible.offsetWidth; 
         requestAnimationFrame(function () { cible.classList.remove('vit-entree-depart'); });
         window.scrollTo(0, 0);
       }
@@ -3788,23 +3635,17 @@
       }
     }
     function ouvrirEcranConnexion() {
-      // Si on a juste "jeté un œil" à la vitrine depuis Mon Profil (sans se déconnecter),
-      // CURRENT_USER est toujours défini - on reprend directement là où on était, selon le type
-      // de compte (jamais un client vers l'app staff, ni l'inverse).
+
       if (CURRENT_USER) { apresConnexionReussie(CURRENT_USER); return; }
       afficherEcranLoginNormal();
     }
-    // Permet de consulter la page publique sans se déconnecter - utile pour voir ce que les clients
-    // voient. Le compte reste connecté en arrière-plan, "Se connecter" sur la vitrine reprend directement.
+
     function voirVitrineDepuisApp() {
       fermerProfil();
       document.getElementById('app').style.display = 'none';
       afficherVitrinePublique();
     }
 
-    // Après une connexion réussie (manuelle, jeton, ou auto-login), on bifurque selon le type de
-    // compte trouvé côté serveur - c'est le tout premier maillon du futur système unifié
-    // employés/clients : "Se connecter" mène à deux endroits différents selon qui se connecte.
     function apresConnexionReussie(compte) {
       CURRENT_USER = compte;
       if (compte.typeCompte === 'client') {
@@ -3813,10 +3654,7 @@
         enterApp();
       }
     }
-    // Un client connecté voit la vitrine complète (accueil, horaires, carte, VIP, réserver...) -
-    // exactement comme n'importe quel visiteur - avec en plus sa propre page "Mon compte" à la
-    // place du bouton "Se connecter". C'est afficherVitrinePublique() qui gère tout ça selon
-    // CURRENT_USER.typeCompte, on n'a donc plus besoin d'un écran séparé et isolé pour les clients.
+
     function enterEspaceClient() {
       document.getElementById('app').style.display = 'none';
       afficherVitrinePublique();
@@ -3883,8 +3721,7 @@
       }
     }
     let TIMER_COMPTE_REBOURS_NUMERO = null;
-    // Fait défiler "Ton numéro arrive dans Xmin Ys..." en direct, et relance un chargement du
-    // statut une fois le délai écoulé pour récupérer le numéro fraîchement généré côté serveur.
+
     function demarrerCompteARebounsNumero_(r) {
       clearInterval(TIMER_COMPTE_REBOURS_NUMERO);
       if (r.Statut !== 'Confirmée' || r.NumeroReservation || !r.DateNumeroDispo) return;
@@ -3997,12 +3834,11 @@
       document.getElementById('inscription-telephone').value = '';
     }
     let RESA_EN_COURS = false;
-    // Préfixe "555-" totalement imposé (reconstruit à chaque frappe, impossible à supprimer), puis
-    // exactement 3 chiffres, un tiret, exactement 4 chiffres - jamais plus, jamais moins.
+
     function formaterTelephoneResa_(input) {
       let chiffres = input.value.replace(/[^0-9]/g, '');
-      if (chiffres.indexOf('555') === 0) chiffres = chiffres.slice(3); // retire le "555" du préfixe, pas les chiffres tapés
-      chiffres = chiffres.slice(0, 7); // 3 + 4 = 7 chiffres max après le préfixe
+      if (chiffres.indexOf('555') === 0) chiffres = chiffres.slice(3); 
+      chiffres = chiffres.slice(0, 7); 
       let formatte = '555-';
       if (chiffres.length > 0) formatte += chiffres.slice(0, 3);
       if (chiffres.length > 3) formatte += '-' + chiffres.slice(3);
@@ -4012,10 +3848,9 @@
       return /^555-\d{3}-\d{4}$/.test(telephone);
     }
     const RESA_NB_MAX = 8;
-    // Corrige la valeur pendant la saisie : jamais au-dessus de 8, jamais en dessous de 1 (sauf
-    // pendant qu'on tape encore, ex: champ vide un instant en effaçant tout).
+
     function clamperNbPersonnesResa_(input) {
-      if (input.value === '') return; // laisse effacer sans forcer un 1 immédiat
+      if (input.value === '') return; 
       let v = parseInt(input.value, 10);
       if (isNaN(v)) { input.value = 1; return; }
       if (v > RESA_NB_MAX) v = RESA_NB_MAX;
@@ -4038,7 +3873,7 @@
       if (!nom || !telephone || !date || !heure) { errEl.textContent = 'Nom, téléphone, date et heure sont obligatoires.'; return; }
       if (!telephoneResaValide_(telephone)) { errEl.textContent = 'Le téléphone doit être au format 555-XXX-XXXX complet.'; return; }
       RESA_EN_COURS = true;
-      const clientId = CURRENT_USER.ID; // "clientId" au sens large : le compte connecté, employé ou client
+      const clientId = CURRENT_USER.ID; 
       google.script.run.withSuccessHandler(function () {
         RESA_EN_COURS = false;
         document.getElementById('resa-nom').value = ''; document.getElementById('resa-telephone').value = '555-';
@@ -4075,16 +3910,13 @@
       restaurerThemePersonnel_();
       appliquerPageClientActive_();
       const vitrineDesactivee = DATA.vitrineActive === false;
-      // La vitrine reste la page de fond - la connexion n'est plus qu'une modale par-dessus,
-      // comme Mon Profil ou n'importe quelle autre popup de l'app. Sauf si la vitrine est
-      // désactivée : dans ce cas, ancien système, plein écran, rien à mettre en fond.
+
       if (!vitrineDesactivee && document.getElementById('vitrine-publique').classList.contains('hidden')) {
         afficherVitrinePublique();
       }
       document.getElementById('login-screen').classList.toggle('plein-ecran', vitrineDesactivee);
       document.getElementById('login-screen').classList.remove('hidden');
-      // Le nom d'entreprise est TOUJOURS ré-appliqué depuis la base à chaque connexion/reboot -
-      // jamais laissé sur le texte statique du HTML, même si Master Settings ne l'a jamais touché.
+
       document.getElementById('brand-login').textContent = DATA.nomEntreprise || "LEOPOLD'S LOUNGE BAR";
       document.getElementById('brand-header').textContent = DATA.nomEntreprise || "LEOPOLD'S LOUNGE BAR";
       document.title = (DATA.nomEntreprise || "LEOPOLD'S LOUNGE BAR") + ' - Comptabilité';
@@ -4111,7 +3943,6 @@
       renderLoginLangueBoutons();
     }
 
-    // Formate un temps restant en "Xj Yh Zmin" - miroir du helper serveur formaterDureeRestante_.
     function formaterDureeRestante(dateCible) {
       const diffMs = new Date(dateCible).getTime() - Date.now();
       if (diffMs <= 0) return 'expire dans un instant';
@@ -4125,9 +3956,7 @@
       if (minutes > 0 || parts.length === 0) parts.push(minutes + 'min');
       return parts.join(' ');
     }
-    // opts = { vire, raison, jusqua, detailBrut }. Si detailBrut est fourni (cas d'un message déjà
-    // formaté par le serveur, ex: échec de connexion), on l'affiche tel quel. Sinon on construit
-    // l'affichage à partir des champs structurés (cas du heartbeat, avec décompte recalculé côté client).
+
     function afficherEcranSuspendu(opts) {
       opts = opts || {};
       document.getElementById('suspendu-overlay').classList.remove('hidden');
@@ -4143,7 +3972,7 @@
         raisonEl.textContent = opts.raison ? 'Raison : ' + opts.raison : '';
       }
       masquerChargement();
-      try { localStorage.removeItem('sandystrip_auto_login'); } catch (e) { /* ignore */ }
+      try { localStorage.removeItem('sandystrip_auto_login'); } catch (e) {  }
     }
     function onError(err) {
       const msg = err.message || String(err);
@@ -4154,14 +3983,13 @@
       }
       showToast(msg, true);
     }
-    /* ===================== Easter egg : 5 clics rapides sur le logo ===================== */
+    
     let CLICS_LOGO = 0, TIMER_CLICS_LOGO = null;
     function clicLogoEasterEgg() {
       CLICS_LOGO++;
       clearTimeout(TIMER_CLICS_LOGO);
-      TIMER_CLICS_LOGO = setTimeout(function () { CLICS_LOGO = 0; }, 2500); // fenêtre de 2.5s pour enchaîner les clics
-      // Paliers d'intensité - plus ça spam, plus le spectacle grandit. Chaque palier se déclenche
-      // une seule fois par série de clics (le compteur repart à zéro après le plus haut palier).
+      TIMER_CLICS_LOGO = setTimeout(function () { CLICS_LOGO = 0; }, 2500); 
+
       if (CLICS_LOGO === 5) {
         lancerConfettis_(40);
         showToast('Tu tiens le bon rythme ce soir !');
@@ -4206,11 +4034,10 @@
       }
     }
 
-    /* ===================== Easter egg : code Konami (↑↑↓↓←→←→BA) ===================== */
     const SEQUENCE_KONAMI = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
     let PROGRES_KONAMI = 0;
     document.addEventListener('keydown', function (e) {
-      if (!e.key) return; // certains événements clavier (IME, claviers virtuels...) n'ont pas cette propriété
+      if (!e.key) return; 
       const touche = e.key.length === 1 ? e.key.toLowerCase() : e.key;
       if (touche === SEQUENCE_KONAMI[PROGRES_KONAMI]) {
         PROGRES_KONAMI++;
@@ -4225,7 +4052,7 @@
         PROGRES_KONAMI = (touche === SEQUENCE_KONAMI[0]) ? 1 : 0;
       }
     });
-    /* ===================== Easter egg : mot-code caché dans la recherche Master Settings ===================== */
+    
     const MOTS_CODES_CACHES = {
       'leopold': 'Le vrai Leopold n\'a jamais existé. Ou peut-être que si.',
       'jazz': 'Quelque part, un saxophone joue encore.'
@@ -4235,7 +4062,7 @@
       if (v === 'leopold') { showToast(MOTS_CODES_CACHES[v]); lancerShimmerOr_(); }
       else if (v === 'jazz') { showToast(MOTS_CODES_CACHES[v]); lancerNotesMusicales_(); }
     }
-    // "leopold" - un lent voile doré qui balaie l'écran façon projecteur, mystérieux plutôt que festif.
+    
     function lancerShimmerOr_() {
       const voile = document.createElement('div');
       voile.style.cssText = 'position:fixed;inset:0;z-index:2001;pointer-events:none;'
@@ -4245,7 +4072,7 @@
       voile.animate([{ backgroundPosition: '150% 0' }, { backgroundPosition: '-50% 0' }], { duration: 1400, easing: 'ease-in-out' });
       setTimeout(function () { voile.remove(); }, 1450);
     }
-    // "jazz" - des notes de musique qui montent doucement, façon fumée de club, pas des confettis qui tombent.
+    
     function lancerNotesMusicales_() {
       const notes = ['♪', '♫', '♬'];
       for (let i = 0; i < 14; i++) {
@@ -4276,16 +4103,13 @@
       btnEl.textContent = input.type === 'password' ? 'Afficher' : 'Masquer';
     }
 
-    /* ===================== Position / réduction du menu ===================== */
     function getPref_(cle, defaut) {
       try { return localStorage.getItem(cle) || defaut; } catch (e) { return defaut; }
     }
     function setPref_(cle, valeur) {
-      try { localStorage.setItem(cle, valeur); } catch (e) { /* tant pis */ }
+      try { localStorage.setItem(cle, valeur); } catch (e) {  }
     }
 
-    /* ===================== Réordonnancement des listes : flèches ou glisser-déposer ===================== */
-    // Préférence personnelle (comme le thème) - appliquée immédiatement, pas besoin de recharger.
     function modeReordonnancement() { return getPref_('sandystrip_mode_reordonnancement', 'fleches'); }
     function definirModeReordonnancement(mode) {
       setPref_('sandystrip_mode_reordonnancement', mode);
@@ -4355,40 +4179,44 @@
     function definirPageClientActive() {
       const actif = document.getElementById('ms-page-client-active').checked;
       const vitrineActif = document.getElementById('ms-vitrine-active').checked;
+      const resaActif = document.getElementById('ms-reservations-active').checked;
       const pwd = document.getElementById('ms-page-client-pwd').value;
       const errEl = document.getElementById('ms-page-client-err');
       errEl.textContent = '';
       Promise.all([
         new Promise((resolve, reject) => google.script.run.withSuccessHandler(resolve).withFailureHandler(reject).setPageClientActive(actif, pwd)),
-        new Promise((resolve, reject) => google.script.run.withSuccessHandler(resolve).withFailureHandler(reject).setVitrineActive(vitrineActif, pwd))
+        new Promise((resolve, reject) => google.script.run.withSuccessHandler(resolve).withFailureHandler(reject).setVitrineActive(vitrineActif, pwd)),
+        new Promise((resolve, reject) => google.script.run.withSuccessHandler(resolve).withFailureHandler(reject).setReservationsActives(resaActif, pwd))
       ]).then(function () {
         DATA.pageClientActive = actif;
         DATA.vitrineActive = vitrineActif;
+        DATA.reservationsActives = resaActif;
         document.getElementById('ms-page-client-pwd').value = '';
         appliquerPageClientActive_();
         showToast('Réglage enregistré.');
       }).catch(function (err) { errEl.textContent = (err && (err.message || err)) || 'Erreur.'; });
     }
-    // Applique le réglage partout où ça compte : sous-onglets staff, et navigation/inscription
-    // publique de la vitrine. VIP n'est jamais concerné.
+
     function appliquerPageClientActive_() {
       const actif = DATA.pageClientActive !== false;
+      const resaActif = actif && DATA.reservationsActives !== false;
       const btnComptes = document.querySelector('#gc-subnav button[onclick*="comptes-clients"]');
       const btnResa = document.querySelector('#gc-subnav button[onclick*="reservations"]');
       if (btnComptes) btnComptes.classList.toggle('hidden', !actif);
-      if (btnResa) btnResa.classList.toggle('hidden', !actif);
+      if (btnResa) btnResa.classList.toggle('hidden', !resaActif);
       const lienInscription = document.getElementById('login-lien-inscription');
       if (lienInscription) lienInscription.classList.toggle('hidden', !actif);
+      const carteReserver = document.getElementById('vit-carte-nav-reserver');
+      if (carteReserver) carteReserver.classList.toggle('hidden', !resaActif);
+      const navReserver = document.getElementById('vitrine-nav-reserver');
+      if (navReserver) navReserver.classList.toggle('hidden', !resaActif);
     }
     function definirVitrineAfficherPrix(actif) {
       DATA.vitrineAfficherPrix = actif;
       google.script.run.withFailureHandler(onError).setVitrineAfficherPrix(actif, CURRENT_USER.sessionToken);
       showToast(actif ? 'Prix affichés sur la vitrine.' : 'Prix masqués sur la vitrine.');
     }
-    // Rend "réordonnable au glisser" les éléments correspondant à itemSelector (chacun doit porter
-    // un attribut data-id), à partir d'une poignée .drag-handle à l'intérieur - souris ET tactile
-    // via les Pointer Events, pas l'API Drag&Drop HTML5 (support tactile trop inégal). onDrop reçoit
-    // la liste des IDs dans le nouvel ordre une fois le doigt/la souris relâché(e).
+
     function activerGlisserDeposer(conteneurEl, itemSelector, onDrop) {
       if (!conteneurEl) return;
       conteneurEl.querySelectorAll('.drag-handle').forEach(function (handle) {
@@ -4417,15 +4245,14 @@
             }
             if (cible) conteneurEl.insertBefore(item, cible);
             else conteneurEl.appendChild(item);
-            // Indicateur : une fine ligne dorée qui montre précisément où la ligne va atterrir.
+            
             const rectConteneur = conteneurEl.getBoundingClientRect();
             const rectRef = cible ? cible.getBoundingClientRect() : autres[autres.length - 1] ? autres[autres.length - 1].getBoundingClientRect() : rectConteneur;
             const yIndicateur = cible ? rectRef.top : rectRef.bottom;
             indicateur.style.top = yIndicateur + 'px';
             indicateur.style.left = rectConteneur.left + 'px';
             indicateur.style.width = rectConteneur.width + 'px';
-            // FLIP (First-Last-Invert-Play) : les autres lignes glissent en douceur vers leur
-            // nouvelle place au lieu de sauter d'un coup - juste sur celles qui ont vraiment bougé.
+
             avant.forEach(function (topAvant, el) {
               const topApres = el.getBoundingClientRect().top;
               const delta = topAvant - topApres;
@@ -4440,8 +4267,7 @@
             });
           }
           function surRelachement() {
-            // Atterrissage en douceur : on ajoute une transition juste pour ce court instant où
-            // la ligne reprend sa taille/couleur normale, plutôt qu'un snap instantané.
+
             item.classList.add('en-relachement');
             item.classList.remove('en-glissement');
             setTimeout(function () { item.classList.remove('en-relachement'); }, 200);
@@ -4462,7 +4288,7 @@
       const nav = document.getElementById('nav');
       const position = getPref_('sandystrip_menu_position', 'left');
       shell.className = 'pos-' + position;
-      nav.classList.remove('collapsed'); // toujours ouvert au chargement, quelle que soit la position
+      nav.classList.remove('collapsed'); 
       renderParametresMenuBoutons();
     }
     function definirPositionMenu(position) {
@@ -4483,14 +4309,13 @@
       </select>`;
     }
 
-    /* ===================== Login / Bootstrap ===================== */
     function doLogin() {
       const identifiant = document.getElementById('login-identifiant').value.trim();
       const pwd = document.getElementById('login-pin').value;
       const errEl = document.getElementById('login-err');
       errEl.textContent = '';
       if (!identifiant) { errEl.textContent = 'Entre ton identifiant.'; return; }
-      try { localStorage.setItem('sandystrip_saved_identifiant', identifiant); } catch (e) { /* localStorage indisponible, tant pis */ }
+      try { localStorage.setItem('sandystrip_saved_identifiant', identifiant); } catch (e) {  }
       afficherChargement('Connexion...');
       google.script.run.withSuccessHandler(function (employe) {
         sauvegarderSessionAutoLogin(identifiant, pwd);
@@ -4514,8 +4339,7 @@
       if (!identifiant) { errEl.textContent = 'Choisis un identifiant.'; return; }
       afficherChargement('Création du compte...');
       google.script.run.withSuccessHandler(function (m) {
-        // Un simple objet construit à la main n'a pas de jeton de session valide - on relance une
-        // vraie connexion avec les identifiants qu'on vient de créer pour en obtenir un.
+
         google.script.run.withSuccessHandler(function (compteAvecToken) {
           DATA.employes.push(compteAvecToken);
           CURRENT_USER = compteAvecToken;
@@ -4532,7 +4356,7 @@
     }
     function logoutReel_() {
       CURRENT_USER = null; CART = [];
-      try { localStorage.removeItem('sandystrip_auto_login'); } catch (e) { /* ignore */ }
+      try { localStorage.removeItem('sandystrip_auto_login'); } catch (e) {  }
       document.getElementById('app').style.display = 'none';
       document.getElementById('login-screen').classList.add('hidden');
       if (DATA.vitrineActive === false) { afficherEcranLoginNormal(); } else { afficherVitrinePublique(); }
@@ -4541,9 +4365,6 @@
       document.getElementById('login-screen').classList.add('hidden');
     }
 
-    /* ===================== App shell ===================== */
-    // Rattrape les messages du Chat ratés pendant que l'onglet était en arrière-plan, dès qu'on y
-    // revient - pas besoin d'attendre le prochain sondage régulier.
     let SURVEILLANCE_ONGLET_DEMARREE = false;
     function demarrerSurveillanceVersion() {
       if (SURVEILLANCE_ONGLET_DEMARREE) return;
@@ -4566,20 +4387,16 @@
         document.getElementById('vitrine-publique').classList.add('hidden');
         document.getElementById('app').style.display = 'block';
         appliquerPageClientActive_();
-        // Toujours ré-appliqué ici aussi (pas seulement à l'écran de connexion manuel) - sinon,
-        // avec l'Auto Login activé, ce chemin est le SEUL emprunté au redémarrage, et le nom
-        // d'entreprise sauvegardé dans Master Settings ne s'affichait jamais dans le logo.
+
         document.getElementById('brand-header').textContent = DATA.nomEntreprise || "LEOPOLD'S LOUNGE BAR";
         document.title = (DATA.nomEntreprise || "LEOPOLD'S LOUNGE BAR") + ' - Comptabilité';
         document.getElementById('header-bienvenue').textContent =
           t('header.bienvenue') + ', ' + (CURRENT_USER['Nom RP'] || '') + ' (' + (CURRENT_USER['Rôle'] || '') + ')' + (CURRENT_USER.Statut ? ' - ' + CURRENT_USER.Statut : '');
 
-        // CURRENT_USER vient d'une lecture fraîche du Sheet (à l'instant de la connexion) :
-        // pas besoin d'un aller-retour serveur supplémentaire, la valeur est déjà à jour.
         CAN_SEE_MASTER_SETTINGS = estValeurVraie_(CURRENT_USER.MasterSettings);
         demarrerSurveillanceVersion();
         surveillanceGenerale();
-        setInterval(surveillanceGenerale, 5000); // un seul aller-retour serveur au lieu de 4 minuteurs séparés
+        setInterval(surveillanceGenerale, 5000); 
         finaliserEntreeApp();
       } catch (e) {
         masquerChargement();
@@ -4588,20 +4405,18 @@
     }
 
     let PREMIER_CHARGEMENT_APP = false;
-    /* ===================== Bloc-notes personnel (Tableau de bord) ===================== */
+    
     let TIMER_SAUVEGARDE_BLOCNOTES = null;
     function chargerBlocNotes_() {
       if (!CURRENT_USER || CURRENT_USER.typeCompte === 'client') return;
       const champPetit = document.getElementById('blocnotes-texte');
-      if (!champPetit) return; // vue du Tableau de bord sans bloc-notes (Fisc, repli...)
+      if (!champPetit) return; 
       google.script.run.withSuccessHandler(function (texte) {
         champPetit.value = texte || '';
         document.getElementById('blocnotes-texte-agrandi').value = texte || '';
       }).withFailureHandler(function () {}).getBlocNotesPerso(CURRENT_USER.ID, CURRENT_USER.sessionToken);
     }
-    // Les deux champs (petit et agrandi) restent synchronisés en direct à chaque frappe, peu
-    // importe lequel est actif - comme ça, fermer la vue agrandie n'importe comment (Échap compris,
-    // qui se contente de la masquer sans logique particulière) ne perd jamais le texte tapé.
+
     function declencherSauvegardeBlocNotes_() {
       const texte = document.getElementById('blocnotes-texte').value;
       document.getElementById('blocnotes-texte-agrandi').value = texte;
@@ -4626,10 +4441,9 @@
           document.getElementById('blocnotes-statut').textContent = msg;
           document.getElementById('blocnotes-statut-agrandi').textContent = msg;
         }).setBlocNotesPerso(CURRENT_USER.ID, texte, CURRENT_USER.sessionToken);
-      }, 900); // laisse la personne finir sa phrase avant d'enregistrer, pas à chaque lettre
+      }, 900); 
     }
-    // Agrandir : même taille que Mon Profil, ouverte comme une vraie page par-dessus le Tableau de
-    // bord. Réduire (ou Échap, géré par le raccourci clavier global déjà en place pour les modales) revient à la taille normale sans jamais perdre le texte.
+
     function agrandirBlocNotes() {
       document.getElementById('blocnotes-texte-agrandi').value = document.getElementById('blocnotes-texte').value;
       document.getElementById('blocnotes-modal').classList.remove('hidden');
@@ -4663,8 +4477,6 @@
         renderMyShift();
         applyI18n();
 
-        // Le chargement ne se masque qu'une fois les VRAIS chiffres affichés (pas juste par esthétique) :
-        // si le premier onglet fait un appel serveur (Tableau de bord, Rapports Entreprise), on attend sa fin.
         const onglAvecAttente = ['dashboard', 'rapports-entreprise'];
         PREMIER_CHARGEMENT_APP = onglAvecAttente.indexOf(firstTab) !== -1;
         if (PREMIER_CHARGEMENT_APP) afficherChargement('Calcul des chiffres...');
@@ -4676,8 +4488,6 @@
       }
     }
 
-    // Construit (ou reconstruit, ex: après changement de langue) les boutons du menu.
-    // Retourne l'id du premier onglet visible.
     function renderNav() {
       const mgmt = !!CURRENT_USER && isManagement(CURRENT_USER.Permission);
       const peutCreer = !!CURRENT_USER && DATA.rolesCreateurs.indexOf(CURRENT_USER['Rôle']) !== -1;
@@ -4704,9 +4514,7 @@
         { id: 'claque', label: 'Claque', mgmtOnly: false, claqueOnly: true },
         { id: 'master-settings', label: t('nav.mastersettings'), mgmtOnly: false, masterSettingsOnly: true }
       ];
-      // Sous-onglets Import/Export déplacés dans Master Settings
-      // Ordre choisi dans Master Settings > Custom (synchronisé pour tout le monde) - les menus non
-      // listés (nouveaux, ou jamais réordonnés) gardent l'ordre par défaut du script, à la fin.
+
       const ordreVoulu = DATA.ordreMenus || [];
       if (ordreVoulu.length > 0) {
         tabs.sort((a, b) => {
@@ -4723,13 +4531,9 @@
       const estFiscSeul = CURRENT_USER && (DATA.rolesAccesRestreint || ['Fisc']).indexOf(CURRENT_USER['Rôle']) !== -1;
       const estAdminLectureSeule = CURRENT_USER && ((DATA.rolesAdminLectureSeule || ['Admin']).indexOf(CURRENT_USER['Rôle']) !== -1 || CURRENT_USER.Permission === 'Admin');
 
-      // Surcharge : si ce rôle a une personnalisation d'onglets dans Master Settings, elle remplace
-      // TOUTES les règles par défaut ci-dessus (mgmtOnly, creerOnly, etc.) pour ce rôle précis.
       const permRole = (DATA.permissionsRoles || []).find(p => p.role === (CURRENT_USER && CURRENT_USER['Rôle']));
       const ongletsPersonnalises = (permRole && permRole.ongletsDefinis) ? permRole.onglets : null;
 
-      // Rôle secondaire (ex: Gérant·e + Barmaid) : ajoute en plus les onglets personnalisés définis
-      // pour ce 2e rôle dans Optimisation & Custom, en complément - jamais en restriction.
       const roleSecondaire = CURRENT_USER && CURRENT_USER.RoleSecondaire;
       const permRoleSecondaire = roleSecondaire ? (DATA.permissionsRoles || []).find(p => p.role === roleSecondaire) : null;
       const ongletsRoleSecondaire = (permRoleSecondaire && permRoleSecondaire.ongletsDefinis) ? permRoleSecondaire.onglets : [];
@@ -4737,24 +4541,20 @@
       const menusDesactifs = DATA.menusDesactifs || [];
       const TOUJOURS_VISIBLES = ['agenda', 'chat', 'dj'];
       tabs.forEach(tab => {
-        // Kill-switch global : un menu désactivé dans Master Settings n'existe plus pour PERSONNE,
-        // même pas pour l'Admin ou les onglets "toujours visibles" - prioritaire sur toute autre règle.
+
         if (menusDesactifs.indexOf(tab.id) !== -1) return;
-        // "Claque" est un droit propre à CHAQUE employé (case Claque=TRUE dans la BDD), pas lié au
-        // rôle ni à la permission - prioritaire même sur l'Admin lecture seule ou les rôles personnalisés.
+
         if (tab.claqueOnly && !estValeurVraie_(CURRENT_USER.Claque)) return;
 
         if (tab.claqueOnly || estAdminLectureSeule || TOUJOURS_VISIBLES.indexOf(tab.id) !== -1) {
-          // "Claque" (déjà validé ci-dessus), Admin lecture seule, ou onglet social/commun toujours visible.
+          
         } else if (ongletsRoleSecondaire.indexOf(tab.id) !== -1) {
-          // Débloqué par le rôle secondaire, peu importe ce que dit le rôle principal - sauf Admin/Master
-          // Settings, qui restent conditionnés à la case individuelle de l'employé (voir plus bas).
+
           if (tab.masterSettingsOnly && !CAN_SEE_MASTER_SETTINGS) return;
           if (tab.adminSectionOnly && CURRENT_USER.SeeAdminSection !== true) return;
         } else if (ongletsPersonnalises) {
           if (ongletsPersonnalises.indexOf(tab.id) === -1) return;
-          // Une personnalisation de rôle ne doit jamais pouvoir contourner la case individuelle
-          // Admin/Master Settings de l'employé - sinon tout le rôle y aurait accès par erreur.
+
           if (tab.masterSettingsOnly && !CAN_SEE_MASTER_SETTINGS) return;
           if (tab.adminSectionOnly && CURRENT_USER.SeeAdminSection !== true) return;
         } else {
@@ -4780,7 +4580,7 @@
       btnProfil.title = t('nav.monprofil');
       btnProfil.onclick = () => ouvrirProfil();
       navItems.appendChild(btnProfil);
-      if (!firstTab) firstTab = 'ventes'; // sécurité : au moins un onglet toujours visible
+      if (!firstTab) firstTab = 'ventes'; 
       appliquerPreferencesMenu();
       return firstTab;
     }
@@ -4801,23 +4601,17 @@
       document.getElementById(elId).innerHTML = '<option value="">- Aucune -</option>' +
         DATA.succursales.map(s => `<option value="${escapeHtml(s.Nom)}">${escapeHtml(s.Nom)}</option>`).join('');
     }
-    // Cache tous les champs "Succursale" de l'app (classe .succursale-field) quand l'option
-    // "Création de succursale" est désactivée dans Master Settings.
+
     function appliquerVisibiliteSuccursales() {
       document.body.classList.toggle('succursales-off', !!DATA && DATA.multiSuccursalesActif === false);
     }
-    // Si NeedMasterPassword=FALSE pour ce compte (en plus de MasterSettings=TRUE), il n'a même plus
-    // besoin de VOIR les champs "Mot de passe maître" - le bypass serveur fonctionne déjà sans, donc
-    // les montrer ne ferait que semer la confusion ("je dois le mettre ou pas ?").
+
     function appliquerDispenseMotDePasseMaitre() {
-      // Découplé de MasterSettings (qui ne contrôle QUE la visibilité de l'onglet lui-même) et rendu
-      // tolérant : si NeedMasterPassword a été édité comme texte ("FALSE") plutôt qu'une vraie case
-      // cochée, la comparaison stricte === false le loupait complètement.
+
       const dispense = !!CURRENT_USER && estValeurFausse_(CURRENT_USER.NeedMasterPassword);
       document.body.classList.toggle('dispense-mdp-maitre', dispense);
     }
 
-    /* ===================== Mon Profil ===================== */
     let PROFIL_PERIODE = 'semaine';
     let profilChart = null;
     const PROFIL_LABELS = { aujourdhui: "Aujourd'hui", hier: 'Hier', semaine: 'Semaine', '14jours': '14 Jours', mois: 'Mois' };
@@ -4863,8 +4657,6 @@
       document.getElementById('profil-modal').classList.add('hidden');
     }
 
-    /* ===================== Personnalisation (couleur, statut) ===================== */
-    // Aperçu en direct (sans rien enregistrer) - juste histoire de voir le rendu avant de cliquer sur Enregistrer.
     function previsualiserPersonnalisation() {
       const couleur = document.getElementById('profil-couleur-pseudo').value;
       const statut = document.getElementById('profil-statut').value;
@@ -4885,7 +4677,7 @@
       CURRENT_USER.CouleurPseudo = couleur;
       CURRENT_USER.Statut = statut;
       CURRENT_USER.Bio = bio;
-      // On met aussi à jour la copie dans DATA.employes, pour que le Chat et les listes reflètent le changement tout de suite.
+      
       const moi = DATA.employes.find(e => e.ID === CURRENT_USER.ID);
       if (moi) { moi.CouleurPseudo = couleur; moi.Statut = statut; moi.Bio = bio; }
       renderCarteProfil();
@@ -4910,11 +4702,7 @@
         `<button class="filter-btn ${k === PROFIL_PERIODE ? 'active' : ''}" onclick="filtrerProfil('${k}')">${PROFIL_LABELS[k]}</button>`
       ).join('');
     }
-    // Début de la semaine (dimanche 00h00) dans le fuseau horaire LOCAL du navigateur -
-    // chaque joueur voit donc sa semaine se réinitialiser à minuit chez lui, pas selon le serveur.
-    // Ancré explicitement sur l'heure du Québec (America/Toronto) - pas sur le fuseau horaire de
-    // l'appareil de la personne. Sinon, un système réglé sur un autre fuseau (ex: heure française)
-    // fait glisser certaines ventes du soir dans la mauvaise semaine, même pour quelqu'un au Québec.
+
     function debutSemaineLocale() {
       const maintenant = new Date();
       const parts = {};
@@ -4927,7 +4715,7 @@
       const offsetMatch = (parts.timeZoneName || 'GMT+0').match(/GMT([+-]\d+)/);
       const offsetHeures = offsetMatch ? parseInt(offsetMatch[1], 10) : 0;
       const offsetStr = (offsetHeures < 0 ? '-' : '+') + String(Math.abs(offsetHeures)).padStart(2, '0') + ':00';
-      // Minuit du jour actuel EN HEURE QUÉBEC, reconstruit comme instant UTC correct via le décalage ISO.
+      
       const minuitAujourdhuiQc = new Date(`${parts.year}-${parts.month}-${parts.day}T00:00:00${offsetStr}`);
       return new Date(minuitAujourdhuiQc.getTime() - decalageJours * 86400000);
     }
@@ -4975,9 +4763,7 @@
     }
 
     let ONGLET_ACTUEL = null;
-    // Antispam générique pour toute navigation entre "pages"/sous-sections - ignore les clics trop
-    // rapprochés (double-clic accidentel, clics en rafale) pour ne pas déclencher plusieurs
-    // chargements de données en même temps. Renvoie false quand il faut ignorer l'appel.
+
     let DERNIER_CHANGEMENT_PAGE = 0;
     function antispamNavigation_() {
       const maintenant = Date.now();
@@ -4986,7 +4772,7 @@
       return true;
     }
     function switchTab(id, btnEl) {
-      if (id === ONGLET_ACTUEL) return; // déjà sur cet onglet : on ne relance rien pour rien
+      if (id === ONGLET_ACTUEL) return; 
       if (!antispamNavigation_()) return;
       ONGLET_ACTUEL = id;
       ['dashboard', 'ventes', 'shifts', 'achats', 'section-patron', 'admin', 'claque', 'articles', 'stock', 'gestion-client', 'objectifs', 'agenda', 'chat', 'dj', 'master-settings', 'rapports-entreprise'].forEach(t => {
@@ -5014,9 +4800,8 @@
       if (id === 'dj') chargerLiensDJ();
     }
 
-    /* ===================== Dashboard ===================== */
     function chargerEtRenderDashboard() {
-      // Vue dédiée et prioritaire pour le rôle Fisc : simple, mais tout ce dont il a besoin.
+      
       if (CURRENT_USER && CURRENT_USER['Rôle'] === 'Fisc') {
         document.getElementById('dashboard-full-view').classList.add('hidden');
         document.getElementById('dashboard-fallback-stats').classList.add('hidden');
@@ -5027,7 +4812,7 @@
       document.getElementById('dashboard-fisc-view').classList.add('hidden');
 
       const permRole = (DATA.permissionsRoles || []).find(p => p.role === (CURRENT_USER && CURRENT_USER['Rôle']));
-      // Un rôle personnalisé avec AUCUNE section de Tableau de bord cochée voit ses propres stats à la place.
+      
       if (permRole && permRole.sectionsDefinies && permRole.sectionsDashboard.length === 0) {
         document.getElementById('dashboard-full-view').classList.add('hidden');
         document.getElementById('dashboard-fallback-stats').classList.remove('hidden');
@@ -5038,8 +4823,7 @@
       document.getElementById('dashboard-full-view').classList.remove('hidden');
 
       const succursale = (CURRENT_USER && CURRENT_USER.Succursale) || '';
-      // Optimisation : sans succursale, le dashboard déjà envoyé à la connexion (getInitialData) est
-      // strictement identique à ce que renverrait un appel serveur ici - on évite un aller-retour inutile.
+
       if (!succursale && DATA.dashboard) {
         renderDashboard();
         appliquerSectionsDashboard(permRole);
@@ -5081,10 +4865,9 @@
     function renderEquipeDashboard() {
       const el = document.getElementById('dash-equipe-liste');
       if (!el) return;
-      // Fisc et Admin restent toujours discrets, quel que soit le filtre de rôles.
+      
       const rolesCaches = ['Fisc', 'Admin'];
-      // Même règle que le Classement : si des rôles précis sont cochés dans "Choisir les rôles
-      // inclus", seuls ceux-là apparaissent ici aussi - les deux restent synchronisés.
+
       const filtreActif = DATA.leaderboardRoles && DATA.leaderboardRoles.length > 0;
       const employes = (DATA.employes || []).filter(e =>
         rolesCaches.indexOf(e['Rôle']) === -1 && e.Permission !== 'Admin' &&
@@ -5156,7 +4939,6 @@
       }).withFailureHandler(onError).getCommissionsSemaine(debutMois.toISOString(), finMois.toISOString());
     }
 
-    /* ===================== Tableau de bord - vue Fisc ===================== */
     let DASHBOARD_FISC_PERIODE = 'semaine';
     let dashboardFiscChart = null;
     function chargerDashboardFisc() {
@@ -5210,8 +4992,6 @@
       chargerDashboardFisc();
     }
 
-    // Si le rôle a une liste de sections personnalisée (non vide), on cache celles qui n'y sont pas.
-    // Si aucune personnalisation n'existe pour ce rôle, tout reste visible (comportement par défaut).
     function appliquerSectionsDashboard(permRole) {
       const toutesLesSections = ['kpis7j', 'kpis30j', 'objectifs', 'revenusEmploye', 'leaderboard', 'commissions', 'equipe'];
       const autorisees = (permRole && permRole.sectionsDefinies) ? permRole.sectionsDashboard : null;
@@ -5408,7 +5188,6 @@
         .map((e, idx) => Object.assign(e, { rang: idx + 1 }));
     }
 
-    /* ===================== Shifts ===================== */
     function findActiveShift() {
       return DATA.shifts.find(s => s.EmployéID === CURRENT_USER.ID && s.Statut !== 'terminé');
     }
@@ -5483,7 +5262,6 @@
       ).join('') || '<tr><td colspan="6" class="small">Aucun shift.</td></tr>';
     }
 
-    /* ===================== Compte client + réduction VIP automatique (Vente normale/Export/Cigares) ===================== */
     const REDUCTIONS_VIP_VENTES = { CART: 0, EXPORT: 0, CART_CIGARES: 0 };
     function chargerListeComptesClientsPourVentes_(selectId) {
       const sel = document.getElementById(selectId);
@@ -5497,8 +5275,7 @@
       google.script.run.withSuccessHandler(function (clients) { DATA.comptesClients = clients; peupler(); })
         .withFailureHandler(function () {}).getComptesClientsAvecVip();
     }
-    // contexte : 'CART' (Vente normale), 'EXPORT' ou 'CART_CIGARES' - dit quel total re-render une
-    // fois la réduction connue.
+
     function surChangementClientVente_(selectId, contexte) {
       const clientId = document.getElementById(selectId).value;
       if (!clientId) {
@@ -5518,7 +5295,6 @@
       else if (contexte === 'CART_CIGARES') renderCartCigaresUI();
     }
 
-    /* ===================== Cigares (catalogue synchronisé avec Master Settings/La carte) ===================== */
     let CART_CIGARES = [];
     function renderCatalogueCigaresVente_() {
       const list = document.getElementById('cigares-catalogue-list');
@@ -5579,8 +5355,7 @@
       const commentaire = document.getElementById('cart-cigares-comment').value.trim();
       const pct = REDUCTIONS_VIP_VENTES.CART_CIGARES;
       const facteur = 1 - pct / 100;
-      // Pas d'articleId réel côté Articles/Stock — les cigares n'ont pas leur propre suivi de
-      // stock, donc pas de mouvement de stock déclenché (comme pour le Tip dans Vente normale).
+
       const lignes = CART_CIGARES.map(c => ({ articleId: '', articleNom: c.articleNom, qte: c.qte, prixUnitaire: c.prixUnitaire * facteur, succursale: '' }));
       google.script.run.withSuccessHandler(function (created) {
         VENTE_CIGARES_EN_COURS = false;
@@ -5598,7 +5373,6 @@
         .addVentes(lignes, CURRENT_USER.ID, CURRENT_USER['Nom RP'], commentaire, '');
     }
 
-    /* ===================== Ventes / Caisse ===================== */
     function articlesVisiblesPourMoi() {
       const rolesVoientTout = ['Patron', 'Co-Patron·ne'];
       const voitTout = !CURRENT_USER.Succursale || rolesVoientTout.indexOf(CURRENT_USER['Rôle']) !== -1;
@@ -5661,7 +5435,7 @@
 
     let VENTE_EN_COURS = false;
     function validerVente() {
-      if (VENTE_EN_COURS) return; // une soumission est déjà en cours, on ignore le spam
+      if (VENTE_EN_COURS) return; 
       if (CART.length === 0) { showToast('Le panier est vide.', true); return; }
       const commentaire = document.getElementById('cart-comment').value.trim();
       if (!commentaire) { showToast('Un commentaire est obligatoire.', true); return; }
@@ -5693,11 +5467,6 @@
       }).withFailureHandler(function (err) { VENTE_EN_COURS = false; onError(err); }).addVentes(lignes, CURRENT_USER.ID, CURRENT_USER['Nom RP'], commentaire, succursaleParDefaut);
     }
 
-    /* ===================== Visibilité de l'historique (Ventes/Achats/Paie) =====================
-       - Employé normal : voit seulement ses propres lignes.
-       - Gérant·e avec une succursale : voit tout l'historique de SA succursale.
-       - Patron : voit tout, avec un sélecteur Global/Nord/Sud.
-    */
     let VENTES_SCOPE_HISTORIQUE = 'global';
     let ACHATS_SCOPE_HISTORIQUE = 'global';
     let PAIE_SCOPE_HISTORIQUE = 'global';
@@ -5753,11 +5522,10 @@
       ).join('') || '<tr><td colspan="8" class="small">Aucune vente.</td></tr>';
     }
 
-    /* ===================== Export (items custom + plafond 3000$) ===================== */
     function peutGererExport() {
       return !!CURRENT_USER && CURRENT_USER['Rôle'] === 'Patron';
     }
-    let EXPORT_ITEM_SELECTIONNE = null; // { id, nom }
+    let EXPORT_ITEM_SELECTIONNE = null; 
     function renderExportTab() {
       renderCatalogueExport();
       populateSuccursaleSelect('export-succursale');
@@ -5834,8 +5602,7 @@
         showToast('Item supprimé.');
       }).withFailureHandler(onError).deleteArticleExport(id, CURRENT_USER.sessionToken);
     }
-    // Calcule automatiquement, pour le prix unitaire saisi, la quantité de chiffres ronds
-    // qui se rapproche le plus du plafond SANS jamais le dépasser.
+
     function calculerExportUI() {
       const prix = Number(document.getElementById('export-prix').value) || 0;
       const plafond = DATA.plafondExport || 3000;
@@ -5910,7 +5677,6 @@
       ).join('') || '<tr><td colspan="7" class="small">Aucun export.</td></tr>';
     }
 
-    /* ===================== Achats ===================== */
     function toggleAchatType() {
       const type = document.getElementById('ach-type').value;
       const isReappro = type === 'Réapprovisionnement stock';
@@ -5918,7 +5684,6 @@
       document.getElementById('ach-montant-hint').textContent = isReappro ? '(calculé automatiquement : prix unitaire × quantité)' : '';
     }
 
-    // Quand on choisit un article : prix unitaire d'achat + succursale se remplissent automatiquement.
     function surChangementArticleAchat() {
       const articleSel = document.getElementById('ach-article');
       const article = DATA.articles.find(a => a.ID === articleSel.value);
@@ -5927,7 +5692,7 @@
       if (article.Succursale) document.getElementById('ach-succursale').value = article.Succursale;
       recalculerMontantAchat();
     }
-    // Montant = Prix unitaire × Qté achetée, recalculé en direct.
+    
     function recalculerMontantAchat() {
       const qte = Number(document.getElementById('ach-qte').value) || 0;
       const prix = Number(document.getElementById('ach-prix').value) || 0;
@@ -5936,7 +5701,7 @@
 
     let ACHAT_EN_COURS = false;
     function ajouterAchat() {
-      if (ACHAT_EN_COURS) return; // une soumission est déjà en cours, on ignore le spam
+      if (ACHAT_EN_COURS) return; 
       const type = document.getElementById('ach-type').value;
       const isReappro = type === 'Réapprovisionnement stock';
       const qte = isReappro ? Number(document.getElementById('ach-qte').value) : 0;
@@ -5978,7 +5743,6 @@
       ).join('') || '<tr><td colspan="8" class="small">Aucun achat.</td></tr>';
     }
 
-    /* ===================== VIP (membres + offres personnalisables) ===================== */
     let VIP_OFFRE_EN_EDITION = null;
     function changerModeVip(mode, btnEl) {
       document.getElementById('vip-mode-membres').classList.toggle('hidden', mode !== 'membres');
@@ -6018,8 +5782,7 @@
     }
     function renderVipMembres() {
       renderVipOffreSelect();
-      // Le sélecteur de compte client a besoin de DATA.comptesClients - la charge si elle n'a pas
-      // déjà été chargée par la page "Compte client" dans cette session.
+
       if (DATA.comptesClients) {
         renderVipClientSelect_();
       } else {
@@ -6036,11 +5799,10 @@
           <td><a class="linklike" onclick="renouvelerVipMembreUI('${m.ID}')">Renouveler</a> <a class="linklike" onclick="supprimerVipMembre('${m.ID}')">Retirer</a></td></tr>`;
       }).join('') || '<tr><td colspan="5" class="small">Aucun membre VIP pour l\'instant.</td></tr>';
     }
-    /* ===================== Compte client (création simplifiée + suivi VIP) ===================== */
+    
     let CC_APERCU_TIMER = null;
     let SP_APERCU_TIMER = null;
-    // Mot de passe déterministe pour un employé (contrairement au client, généré aléatoirement) -
-    // 3 lettres du prénom + nom complet, facile à retenir et à donner de vive voix.
+
     function genererMdpEmploye_(nom, prenom) {
       const nettoie = s => String(s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-zA-Z]/g, '').toLowerCase();
       return nettoie(prenom).slice(0, 3) + nettoie(nom);
@@ -6056,7 +5818,7 @@
         google.script.run.withSuccessHandler(function (identifiant) {
           idEl.value = identifiant;
         }).withFailureHandler(function () {}).previsualiserIdentifiantClient(nom, prenom);
-      }, 250); // petite pause pour ne pas spammer le serveur à chaque frappe
+      }, 250); 
     }
     function previsualiserIdentifiantClientUI() {
       clearTimeout(CC_APERCU_TIMER);
@@ -6068,7 +5830,7 @@
         google.script.run.withSuccessHandler(function (identifiant) {
           el.textContent = identifiant;
         }).withFailureHandler(function () { el.textContent = '-'; }).previsualiserIdentifiantClient(nom, prenom);
-      }, 250); // petite pause pour ne pas spammer le serveur à chaque frappe
+      }, 250); 
     }
     let CC_CREATION_EN_COURS = false;
     function creerCompteClientParEmployeUI() {
@@ -6164,7 +5926,7 @@
       }).withFailureHandler(function (err) { errEl.textContent = err.message || String(err); })
         .traiterReservation(id, 'Refusée', CURRENT_USER.ID, CURRENT_USER['Nom RP'], raison);
     }
-    // Corrige/complète la raison d'un refus déjà donné, sans changer le statut.
+    
     function modifierRaisonRefusUI(id) {
       RAISON_REFUS_CIBLE = id;
       const r = (DATA.reservations || []).find(x => x.ID === id);
@@ -6323,7 +6085,6 @@
       }).withFailureHandler(onError).deleteVipOffre(CURRENT_USER.ID, null, id);
     }
 
-    /* ===================== Impôts & Subventions (suivi réel, séparé des Dépenses) ===================== */
     let IMPOTS_CHARGES = false;
     function chargerImpots() {
       if (IMPOTS_CHARGES) { renderImpotsTable(); return; }
@@ -6393,7 +6154,6 @@
         .addSubvention(montant, comment, CURRENT_USER.ID, CURRENT_USER['Nom RP']);
     }
 
-    /* ===================== Paie ===================== */
     function ajouterPaie() {
       const sel = document.getElementById('paie-employe');
       const employeId = sel.value;
@@ -6418,15 +6178,13 @@
       ).join('') || '<tr><td colspan="5" class="small">Aucun versement.</td></tr>';
     }
 
-    // Vraie semaine calendaire (dimanche 00h00, fuseau du navigateur) -> maintenant. Se réinitialise
-    // chaque lundi, contrairement à une fenêtre glissante de 7 jours recalculée chaque jour.
     let CACHE_COMMISSIONS_PAIE = null;
     function chargerCommissionsSemaine() {
       const debut = debutSemaineLocale();
       const fin = new Date();
       document.getElementById('paie-semaine-label').textContent =
         '(' + debut.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' }) + ' → ' + fin.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' }) + ')';
-      // Déjà calculé cette session : réaffiche instantanément (la semaine ne change pas en cours de session).
+      
       if (CACHE_COMMISSIONS_PAIE) { document.getElementById('tbl-commissions-semaine').innerHTML = CACHE_COMMISSIONS_PAIE; return; }
       google.script.run.withSuccessHandler(function (resultats) {
         const html = resultats.map(r =>
@@ -6437,7 +6195,6 @@
       }).withFailureHandler(onError).getCommissionsSemaine(debut.toISOString(), fin.toISOString());
     }
 
-    /* ===================== Section Patron : Employés ===================== */
     let EDIT_EMPLOYE_ID = null;
     let FUSION_SUCC_PARAMS_RESTANTS = null;
 
@@ -6447,10 +6204,6 @@
       return lines.length ? escapeHtml(lines[lines.length - 1]) : '-';
     }
 
-    // Sous-menu générique "Liste / Ajouter" pour les pages simples (Articles, Objectifs, Contrats).
-    // Bascule entre les catégories de Master Settings (disposition façon Discord : barre latérale + panneau).
-    // Filtre les lignes de réglages (pas les listes générées dynamiquement comme Menus/Rôles, qui
-    // n'ont pas cette structure) et ouvre automatiquement les groupes qui contiennent un résultat.
     function filtrerMasterSettings(query) {
       verifierMotCodeCache_(query);
       const q = (query || '').trim().toLowerCase();
@@ -6536,8 +6289,7 @@
       if (categorie === 'comptes') chargerComptesAdmin();
     }
     function renderAdminOverview() {
-      // Vrai resync à chaque visite - avant, ces chiffres restaient figés depuis la connexion,
-      // ce qui pouvait afficher des compteurs périmés après un moment passé dans l'app.
+
       ['admin-kpi-employes', 'admin-kpi-ventes', 'admin-kpi-exports', 'admin-kpi-chat', 'admin-kpi-absences', 'admin-kpi-roles'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.textContent = '…';
@@ -6552,7 +6304,6 @@
       }).withFailureHandler(onError).getAdminOverviewStats();
     }
 
-    /* ===================== Claque (gag interne) ===================== */
     function chargerClaques() {
       document.getElementById('tbl-claques').innerHTML = '<tr><td colspan="3" class="small">Chargement...</td></tr>';
       google.script.run.withSuccessHandler(function (claques) {
@@ -6564,7 +6315,6 @@
       const claques = (DATA.claques || []).slice().sort((a, b) => (Number(b.NbClaques) || 0) - (Number(a.NbClaques) || 0));
       const MEDAILLES = ['🥇', '🥈', '🥉'];
 
-      // Podium (top 3)
       const podiumEl = document.getElementById('claque-podium');
       if (podiumEl) {
         podiumEl.innerHTML = claques.slice(0, 3).map((c, i) => `
@@ -6575,12 +6325,10 @@
           </div>`).join('') || '';
       }
 
-      // Tableau complet
       document.getElementById('tbl-claques').innerHTML = claques.map((c, i) =>
         `<tr style="${c.EmployéID === CURRENT_USER.ID ? 'background:var(--bg-card2);' : ''}"><td>${i < 3 ? MEDAILLES[i] : i + 1}</td><td>${escapeHtml(c.Employé)}</td><td class="kpi-gold" style="font-weight:700;">${c.NbClaques}</td></tr>`
       ).join('') || '<tr><td colspan="3" class="small">Personne n\'a encore claqué Vincent. Sois le premier !</td></tr>';
 
-      // Stats personnelles
       const moi = claques.find(c => c.EmployéID === CURRENT_USER.ID);
       document.getElementById('claque-mon-total').textContent = moi ? moi.NbClaques : 0;
       const monRang = moi ? claques.indexOf(moi) + 1 : null;
@@ -6592,8 +6340,6 @@
     function claquerVincentUI() {
       jouerSonClaque();
 
-      // Petit effet d'impact sur le bouton + volée "+1" flottante - à CHAQUE clic, même en rafale,
-      // pour que ça reste satisfaisant. Seul l'envoi réel au serveur est limité (voir plus bas).
       const btn = document.getElementById('btn-claquer');
       btn.style.transform = 'scale(0.92) rotate(-2deg)';
       setTimeout(function () { btn.style.transform = 'none'; }, 90);
@@ -6609,7 +6355,6 @@
         volee.style.opacity = '0';
       });
 
-      // Combo : compte les clics rapprochés, se remet à zéro après 1.5s d'inactivité.
       CLAQUE_COMBO++;
       const comboEl = document.getElementById('claque-combo');
       if (CLAQUE_COMBO > 1) {
@@ -6619,15 +6364,12 @@
       clearTimeout(CLAQUE_COMBO_TIMER);
       CLAQUE_COMBO_TIMER = setTimeout(function () { CLAQUE_COMBO = 0; comboEl.style.opacity = '0'; }, 1500);
 
-      // Antispam : max 1 claque réellement envoyée au serveur toutes les 2 secondes. Le surplus
-      // s'accumule dans une file, affichée en notification en bas d'écran, et se vide toute seule
-      // à raison d'une claque toutes les 2 secondes (-1 sur la notification, +1 sur le compteur).
       CLAQUE_EN_ATTENTE++;
       renderNotifClaqueEnAttente_();
       if (!CLAQUE_TIMER_FILE) demarrerTraitementFileClaque_();
     }
     function demarrerTraitementFileClaque_() {
-      envoyerUneClaqueDeLaFile_(); // la première part tout de suite, pas besoin d'attendre 2s pour un clic isolé
+      envoyerUneClaqueDeLaFile_(); 
       CLAQUE_TIMER_FILE = setInterval(function () {
         if (CLAQUE_EN_ATTENTE <= 0) {
           clearInterval(CLAQUE_TIMER_FILE);
@@ -6663,7 +6405,6 @@
       }
     }
 
-    /* ===================== Journal d'activité ===================== */
     let JOURNAL_FILTRE = '';
     function renderJournalFiltres() {
       const options = [['', 'Tout'], ['Connexion', 'Connexions'], ['MasterSettings', 'Master Settings'], ['Suspension', 'Suspensions'], ['Mute', 'Mutes']];
@@ -6681,7 +6422,6 @@
       }).withFailureHandler(onError).getJournalActivite(filtre);
     }
 
-    /* ===================== Présence ===================== */
     function chargerPresence() {
       google.script.run.withSuccessHandler(function (presents) {
         const el = document.getElementById('presence-liste');
@@ -6696,7 +6436,6 @@
       }).withFailureHandler(onError).getPresenceActuelle();
     }
 
-    /* ===================== Comptes (suspension / mute) ===================== */
     function chargerComptesAdmin() {
       renderComptesAdmin();
     }
@@ -6720,10 +6459,7 @@
     function suspendreCompteUI(id, nom, suspendu) {
       ouvrirFicheSuspension(id, nom);
     }
-    // Même action que suspendreCompteUI, mais accessible directement depuis le tableau Employés
-    // de Patron/Gérant (pas besoin d'aller dans Admin). Suspendre supprime aussi ses ventes/achats/
-    // exports des 10 dernières secondes côté serveur - utile contre un troll actif au moment du clic.
-    /* ===================== Suspensions : menu dédié ===================== */
+
     function renderSuspensionsActuelles() {
       const employes = DATA.employes || [];
       const suspendus = employes.filter(e => estValeurVraie_(e.Suspendu));
@@ -6758,7 +6494,6 @@
       }).withFailureHandler(onError).getHistoriqueSuspensions();
     }
 
-    /* ===================== Fiche de suspension (une personne à la fois, comme "Modifier employé") ===================== */
     let FICHE_SUSPENSION_ID = null;
     function ouvrirFicheSuspension(id, nom) {
       const e = DATA.employes.find(x => x.ID === id);
@@ -6830,14 +6565,13 @@
         .suspendreCompte(FICHE_SUSPENSION_ID, false, CURRENT_USER.sessionToken, CURRENT_USER['Nom RP']);
     }
     let MUTE_CIBLE_ID = null;
-    /* ===================== Confirmation avant action (vente, dépense...) - réglage GLOBAL ===================== */
-    // Si le réglage est désactivé (pour tout le monde), on exécute directement sans rien demander.
+
     function confirmerActionAvantExecution(titre, message, callback, toujoursConfirmer) {
       if (!toujoursConfirmer && DATA.confirmationsActives === false) { callback(); return; }
       document.getElementById('confirmation-action-titre').textContent = titre;
       document.getElementById('confirmation-action-message').textContent = message;
       const btn = document.getElementById('confirmation-action-btn-oui');
-      const nouveauBtn = btn.cloneNode(true); // retire les anciens écouteurs avant d'en attacher un nouveau
+      const nouveauBtn = btn.cloneNode(true); 
       btn.parentNode.replaceChild(nouveauBtn, btn);
       nouveauBtn.onclick = function () { fermerConfirmationAction(); callback(); };
       document.getElementById('confirmation-action-modal').classList.remove('hidden');
@@ -6881,7 +6615,6 @@
       }).withFailureHandler(onError).muterEmploye(id, minutes, CURRENT_USER.ID, CURRENT_USER['Nom RP']);
     }
 
-    /* ===================== Recherche globale ===================== */
     function lancerRechercheGlobale() {
       const motCle = document.getElementById('recherche-mot-cle').value.trim();
       const el = document.getElementById('recherche-resultats');
@@ -6974,8 +6707,7 @@
       try { renderEquipeDashboard(); } catch (e) {}
       google.script.run.withFailureHandler(function (err) { onError(err); }).reordonnerEmployes(idsOrdonnes);
     }
-    // Déplace un employé d'un cran (haut/bas) dans l'ordre d'affichage - répercuté partout où
-    // DATA.employes est utilisé (table Patron, Équipe du Tableau de bord, sélecteurs...).
+
     function deplacerEmployeUI(id, delta) {
       const idx = DATA.employes.findIndex(e => e.ID === id);
       const nouvelIdx = idx + delta;
@@ -6996,7 +6728,6 @@
       btn.textContent = ouvert ? '−' : '+';
     }
 
-    /* ===================== Patron > Stats (par succursale) ===================== */
     let STATS_SUCC_PERIODE = 'semaine';
     function renderStatsSuccFiltres() {
       document.getElementById('stats-succ-filtres').innerHTML = Object.keys(PROFIL_LABELS).map(k =>
@@ -7064,14 +6795,13 @@
         renderSectionPatron();
         document.getElementById('sp-form-body').classList.add('hidden');
         document.getElementById('sp-form-toggle-btn').textContent = '+';
-        // Place le nouvel employé à la fin de l'ordre d'affichage (sinon il apparaîtrait tout en haut).
+        
         google.script.run.withFailureHandler(function () {}).reordonnerEmployes(DATA.employes.map(e => e.ID));
         showToast('Employé ajouté - identifiants à communiquer au joueur.');
       }).withFailureHandler(function (err) { errEl.textContent = err.message || String(err); })
         .addEmploye(CURRENT_USER.ID, '', nom, identifiant, role, permission, succursale, commission, salaire, 0, motDePasse, '', roleSecondaire);
     }
 
-    /* ---- Modale de modification (remplace tous les prompt()/confirm()) ---- */
     function ouvrirModifEmploye(id) {
       const m = DATA.employes.find(x => x.ID === id);
       if (!m) return;
@@ -7094,7 +6824,7 @@
       renderZoneVire(m);
       document.getElementById('employe-modal').classList.remove('hidden');
     }
-    /* ===================== Stats d'un employé (vue Patron/Gérant) ===================== */
+    
     let STATS_EMPLOYE_ID = null;
     let STATS_EMPLOYE_PERIODE = 'semaine';
     let statsEmployeChart = null;
@@ -7249,8 +6979,6 @@
         .reintegrerEmploye(idAReintegrer, CURRENT_USER.sessionToken, CURRENT_USER['Nom RP']);
     }
 
-
-    /* ===================== Rôles ===================== */
     function renderRolesList() {
       const el = document.getElementById('roles-list');
       if (!el) return;
@@ -7279,7 +7007,6 @@
       }).withFailureHandler(onError).deleteRole(nom, CURRENT_USER.sessionToken);
     }
 
-    /* ===================== Succursales ===================== */
     function renderSuccursalesList() {
       const el = document.getElementById('succursales-list');
       if (!el) return;
@@ -7309,7 +7036,6 @@
       }).withFailureHandler(onError).deleteSuccursale(id, CURRENT_USER.sessionToken);
     }
 
-    /* ===================== Articles admin ===================== */
     function renderArticlesAdmin() {
       const mode = modeReordonnancement();
       document.getElementById('tbl-articles-admin').innerHTML = DATA.articles.map((a, i) =>
@@ -7338,8 +7064,7 @@
       renderCatalogueCaisse();
       google.script.run.withFailureHandler(function (err) { onError(err); }).reordonnerArticles(idsOrdonnes);
     }
-    // Déplace un article d'un cran (haut/bas) dans l'ordre d'affichage - appliqué PARTOUT (catalogue
-    // de vente, export, conso perso...) puisque tous se basent sur ce même ordre côté serveur.
+
     function deplacerArticleUI(id, delta) {
       const idx = DATA.articles.findIndex(a => a.ID === id);
       const nouvelIdx = idx + delta;
@@ -7353,7 +7078,6 @@
       google.script.run.withFailureHandler(function (err) { onError(err); }).reordonnerArticles(idsOrdonnes);
     }
 
-    /* ===================== Stock ===================== */
     const ETAT_STOCK_PILL = { 'Rupture': 'pill-rupture', 'Stock bas': 'pill-bas', 'Disponible': 'pill-dispo', 'Hors service': 'pill-hs' };
     let STOCK_CHARGE = false;
     function chargerStock() {
@@ -7432,7 +7156,7 @@
         DATA.articles.push({ ID: r.id, Article: nom, 'Prix achat ($)': prixAchat, 'Prix vente ($)': prixVente, Catégorie: cat, Notes: notes, Succursale: succursale });
         document.getElementById('new-art-nom').value = ''; document.getElementById('new-art-notes').value = '';
         renderArticlesAdmin(); renderCatalogueCaisse(); populateArticleSelect('ach-article');
-        // Place le nouvel article à la fin de l'ordre d'affichage (sinon il apparaîtrait tout en haut).
+        
         google.script.run.withFailureHandler(function () {}).reordonnerArticles(DATA.articles.map(a => a.ID));
         showToast('Article ajouté.');
       }).withFailureHandler(onError).addArticle(nom, prixAchat, prixVente, 0, 0, cat, notes, succursale, CURRENT_USER.sessionToken);
@@ -7499,7 +7223,6 @@
       }).withFailureHandler(function (err) { document.getElementById('art-edit-err').textContent = err.message || String(err); }).deleteArticle(id, CURRENT_USER.sessionToken);
     }
 
-    /* ===================== Objectifs ===================== */
     function toggleObjCible() {
       document.getElementById('obj-employe-block').classList.toggle('hidden', document.getElementById('obj-cible').value !== 'Employé');
     }
@@ -7546,8 +7269,6 @@
       }).withFailureHandler(onError).deleteObjectif(id, CURRENT_USER.sessionToken);
     }
 
-    /* ===================== Agenda ===================== */
-    // Tout le monde peut créer et gérer des événements maintenant.
     function peutGererAgenda() {
       return !!CURRENT_USER;
     }
@@ -7564,7 +7285,7 @@
     function chargerAgenda() {
       document.getElementById('lien-horaires-ouverture').classList.toggle('hidden', !peutGererHoraires());
       renderAgendaVueBoutons();
-      // Déjà chargé cette session : on réaffiche instantanément depuis la mémoire, sans repasser par le serveur.
+      
       if (AGENDA_CHARGE) {
         renderAgendaCalendrier();
         renderAgendaListe();
@@ -7582,11 +7303,10 @@
       }).withFailureHandler(function () {}).getAbsences();
     }
 
-    /* ===================== Chat (salon commun) ===================== */
     let SONDAGE_CHAT_INTERVAL = null;
     let CHAT_CHARGE = false;
     function chargerChat() {
-      // Déjà chargé cette session : affichage instantané depuis la mémoire, on rafraîchit en silence derrière.
+      
       if (CHAT_CHARGE) {
         renderChat();
         demarrerSondageChat();
@@ -7607,13 +7327,13 @@
     function demarrerSondageChat() {
       arreterSondageChat();
       SONDAGE_CHAT_INTERVAL = setInterval(function () {
-        if (document.hidden) return; // onglet du navigateur en arrière-plan : on ne sonde pas pour rien
+        if (document.hidden) return; 
         google.script.run.withSuccessHandler(function (messages) {
           DATA.chat = messages;
           renderChat();
-        }).withFailureHandler(function () { /* pas grave, on retentera au prochain sondage */ }).getMessagesChat();
-      }, 700); // toutes les 700ms, tant que l'onglet Chat est ouvert et visible - le cache serveur (20s,
-      // invalidé à chaque nouveau message) encaisse ce rythme sans coût supplémentaire réel
+        }).withFailureHandler(function () {  }).getMessagesChat();
+      }, 700); 
+      
     }
     function arreterSondageChat() {
       if (SONDAGE_CHAT_INTERVAL) { clearInterval(SONDAGE_CHAT_INTERVAL); SONDAGE_CHAT_INTERVAL = null; }
@@ -7686,23 +7406,22 @@
         return;
       }
       input.value = '';
-      // Envoi optimiste : le message s'affiche immédiatement, avant même la confirmation du serveur.
+      
       const idTemp = 'temp_' + Date.now();
       DATA.chat = DATA.chat || [];
       DATA.chat.push({ ID: idTemp, Date: new Date(), EmployéID: CURRENT_USER.ID, Employé: CURRENT_USER['Nom RP'], Message: texte });
       renderChat();
       google.script.run.withSuccessHandler(function (r) {
         const m = DATA.chat.find(x => x.ID === idTemp);
-        if (m) m.ID = r.id; // remplace l'ID temporaire par le vrai, une fois confirmé
+        if (m) m.ID = r.id; 
       }).withFailureHandler(function (err) {
-        DATA.chat = DATA.chat.filter(x => x.ID !== idTemp); // échec : on retire le message optimiste
+        DATA.chat = DATA.chat.filter(x => x.ID !== idTemp); 
         renderChat();
         input.value = texte;
         onError(err);
       }).addMessageChat(texte, CURRENT_USER.ID, CURRENT_USER['Nom RP']);
     }
 
-    /* ===================== Messages privés (façon Discord) ===================== */
     function changerModeChat(mode, btnEl) {
       document.getElementById('chat-mode-general').classList.toggle('hidden', mode !== 'general');
       document.getElementById('chat-mode-prive').classList.toggle('hidden', mode !== 'prive');
@@ -7790,7 +7509,6 @@
         .envoyerMessagePrive(CURRENT_USER.ID, CURRENT_USER['Nom RP'], MP_CONTACT_ACTUEL, autreNom, texte, 'mp');
     }
 
-    /* ===================== DJ (liens YouTube pour le PMMS) ===================== */
     let DJ_CHARGE = false;
     function chargerLiensDJ() {
       if (DJ_CHARGE) { renderLiensDJ(); return; }
@@ -7995,7 +7713,7 @@
       const annee = AGENDA_DATE_REF.getFullYear(), mois = AGENDA_DATE_REF.getMonth();
       document.getElementById('agenda-titre-periode').textContent = MOIS_NOMS[mois] + ' ' + annee;
       const premierJour = new Date(annee, mois, 1);
-      const decalage = (premierJour.getDay() + 6) % 7; // lundi = 0
+      const decalage = (premierJour.getDay() + 6) % 7; 
       const nbJours = new Date(annee, mois + 1, 0).getDate();
       const aujourdhui = new Date(); aujourdhui.setHours(0, 0, 0, 0);
       let html = '<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:10px;">' +
@@ -8133,7 +7851,6 @@
       }).withFailureHandler(onError).deleteEvenement(id);
     }
 
-    /* ===================== Horaires d'ouverture ===================== */
     function renderHorairesListe() {
       const horaires = DATA.horairesOuverture || [];
       document.getElementById('horaires-liste').innerHTML = JOURS_SEMAINE.map((jour, idx) => {
@@ -8163,7 +7880,6 @@
       }).withFailureHandler(onError).setHorairesOuverture(joursArray, CURRENT_USER.sessionToken);
     }
 
-    /* ===================== Fisc (créé par le Patron) ===================== */
     function creerAccesFisc() {
       const identifiant = document.getElementById('fisc-identifiant').value.trim();
       const motDePasse = document.getElementById('fisc-motdepasse').value;
@@ -8196,7 +7912,6 @@
       }).withFailureHandler(function (err) { errEl.textContent = err.message || String(err); }).setTauxFisc(taux, pwd, CURRENT_USER.ID);
     }
 
-    /* ===================== Conso perso ===================== */
     let CONSO_SELECTION = {};
     function ouvrirConsoPerso() {
       CONSO_SELECTION = {};
@@ -8238,7 +7953,6 @@
         .prendreConsoPerso(lignes, CURRENT_USER.ID, CURRENT_USER['Nom RP']);
     }
 
-    /* ===================== Zone dangereuse (resets) ===================== */
     let RESET_CIBLE_ACTUELLE = null;
     function ouvrirConfirmationReset(cible, description) {
       RESET_CIBLE_ACTUELLE = cible;
@@ -8262,7 +7976,6 @@
       }).withFailureHandler(function (err) { errEl.textContent = err.message || String(err); }).resetDonnees(RESET_CIBLE_ACTUELLE, pwd);
     }
 
-    /* ===================== Master Settings ===================== */
     function renderMasterSettingsGate() {
       google.script.run.withSuccessHandler(function (peutVoir) {
         if (peutVoir) {
@@ -8321,25 +8034,20 @@
       renderMenusActifsListe();
       renderThemeVitrineBoutons();
       document.getElementById('ms-page-client-active').checked = DATA.pageClientActive !== false;
+      document.getElementById('ms-reservations-active').checked = DATA.reservationsActives !== false;
       document.getElementById('ms-vitrine-active').checked = DATA.vitrineActive !== false;
       renderRolesList();
       renderPermissionsRoleSelect();
     }
-    // Liste de tous les onglets pouvant être désactivés globalement - jamais "master-settings"
-    // (on ne veut pas pouvoir se couper l'accès au réglage qui permet de le rallumer) ni "dashboard"
-    // (page d'accueil de tout le monde, doit toujours exister). Calculé à la demande (pas au chargement
-    // du script) car ONGLETS_DISPONIBLES est défini plus bas dans le fichier.
+
     function menusDesactivables_() {
       return ONGLETS_DISPONIBLES.filter(o => o[0] !== 'master-settings' && o[0] !== 'dashboard');
     }
-    // Le Tableau de bord doit pouvoir être déplacé dans l'ordre (c'est justement ce qu'on nous a
-    // demandé), mais reste protégé contre la désactivation - perdre l'accès à son propre accueil
-    // serait plus gênant qu'utile. Master Settings reste exclu des deux (jamais déplaçable/désactivable).
+
     function menusReordonnables_() {
       return ONGLETS_DISPONIBLES.filter(o => o[0] !== 'master-settings');
     }
-    // L'ordre affiché dans cette liste EST l'ordre choisi (ou l'ordre par défaut du script si rien
-    // n'a encore été réordonné) - modifié en mémoire par les flèches, sauvegardé au clic sur Enregistrer.
+
     let MENUS_ORDRE_EN_COURS = null;
     function menusEnOrdreActuel_() {
       if (MENUS_ORDRE_EN_COURS) return MENUS_ORDRE_EN_COURS;
@@ -8433,7 +8141,7 @@
     function fermerFusionSuccursales() {
       document.getElementById('fusion-succursales-modal').classList.add('hidden');
       FUSION_SUCC_PARAMS_RESTANTS = null;
-      // La fusion n'a pas été terminée : on remet la case à cocher sur "actif" pour éviter un état incohérent.
+      
       document.getElementById('master-multi-succursales').checked = true;
     }
     function confirmerFusionSuccursales(nomPrincipal) {
@@ -8442,13 +8150,13 @@
       const errEl = document.getElementById('fusion-succ-err');
       errEl.textContent = '';
       google.script.run.withSuccessHandler(function () {
-        // Répercute la fusion localement : tout le monde et tous les articles rejoignent la succursale choisie.
+        
         DATA.articles.forEach(a => { a.Succursale = nomPrincipal; });
         DATA.employes.forEach(e => { e.Succursale = nomPrincipal; });
         DATA.succursales = [];
         document.getElementById('fusion-succursales-modal').classList.add('hidden');
         showToast('Succursales fusionnées vers ' + nomPrincipal + '.');
-        // Le multi-succursales est déjà désactivé côté serveur par fusionnerSuccursales() : on enregistre juste le reste.
+        
         enregistrerParametresGeneraux_(params, false);
       }).withFailureHandler(function (err) { errEl.textContent = err.message || String(err); })
         .fusionnerSuccursales(nomPrincipal, params.pwd, CURRENT_USER.ID);
@@ -8489,8 +8197,6 @@
 
       const params = { messageJour, infoPublique, apropos, favicon, nomEntreprise, slogan, devise, themeDefaut, autoLogin, pwd };
 
-      // Désactivation avec 2+ succursales encore existantes : on demande d'abord laquelle devient
-      // la principale (fusion), avant de continuer l'enregistrement du reste des réglages Généraux.
       const enTrainDeDesactiver = DATA.multiSuccursalesActif && !multiSuccursales;
       if (enTrainDeDesactiver && (DATA.succursales || []).length >= 2) {
         ouvrirFusionSuccursales(params);
@@ -8501,8 +8207,7 @@
     function enregistrerParametresGeneraux_(params, multiSuccursales) {
       const errEl = document.getElementById('ms-general-err');
       const pwd = params.pwd;
-      // Chaque champ est indépendant : si l'un échoue (ex: mot de passe erroné pour ce champ précis),
-      // les autres s'enregistrent quand même - pas de blocage en chaîne comme avec des appels séquentiels.
+
       Promise.allSettled([
         new Promise((resolve, reject) => google.script.run.withSuccessHandler(resolve).withFailureHandler(reject).setMessageDuJour(params.messageJour, pwd, CURRENT_USER.ID)),
         new Promise((resolve, reject) => google.script.run.withSuccessHandler(resolve).withFailureHandler(reject).setInfoPublique(params.infoPublique, pwd, CURRENT_USER.ID)),
@@ -8556,7 +8261,6 @@
       });
     }
 
-    /* ===================== Permissions par rôle ===================== */
     const ONGLETS_DISPONIBLES = [
       ['dashboard', 'Tableau de bord'], ['shifts', 'Shifts'], ['ventes', 'Ventes'], ['achats', 'Dépenses'],
       ['articles', 'Articles'], ['stock', 'Stock'], ['gestion-client', 'Gestion client'], ['objectifs', 'Objectifs'], ['agenda', 'Agenda'],
@@ -8572,9 +8276,7 @@
       populateSelect('perm-role-select', DATA.roles);
       chargerPermissionsRoleSelectionne();
     }
-    // Admin, Master Settings et Claque dépendent d'une case propre à chaque employé (SeeAdminSection,
-    // MasterSettings, Claque), pas du rôle - les proposer ici serait trompeur puisque ça n'aurait
-    // aucun effet réel (voir la garde correspondante dans renderNav).
+
     function ongletsPersonnalisablesParRole_() {
       return ONGLETS_DISPONIBLES.filter(o => ['admin', 'master-settings', 'claque'].indexOf(o[0]) === -1);
     }
@@ -8623,7 +8325,6 @@
       }).withFailureHandler(function (err) { errEl.textContent = err.message || String(err); }).retirerPermissionsRole(role, pwd, CURRENT_USER.ID);
     }
 
-    /* ===================== Rapports Entreprise ===================== */
     let RAPPORTS_SCOPE_ACTUEL = null;
     let RAPPORTS_LABEL_ACTUEL = '';
     let RAPPORTS_PERIODE_ACTUELLE = 'semaine';
@@ -8634,8 +8335,7 @@
       const cartes = [['global', 'Vue globale', 'Toutes les succursales combinées']].concat(
         (DATA.succursales || []).map(s => [s.Nom, s.Nom, 'Chiffres de la succursale ' + s.Nom])
       );
-      // Une seule vue possible (multi-succursales désactivé, ou une seule succursale existante) :
-      // on saute l'écran de sélection et on affiche directement les chiffres, sans clic superflu.
+
       if (cartes.length === 1) {
         ouvrirRapportScope(cartes[0][0], cartes[0][1]);
         return;
@@ -8685,10 +8385,7 @@
         const estSemaine = RAPPORTS_PERIODE_ACTUELLE === 'semaine';
         document.getElementById('rapports-kpis-semaine').classList.toggle('hidden', !estSemaine);
         document.getElementById('rapports-kpis-annee').classList.toggle('hidden', estSemaine);
-        // "fin" est une borne EXCLUSIVE (le dimanche de la semaine suivante, à minuit) - l'afficher
-        // telle quelle donnait l'impression que ce jour-là était inclus, alors qu'il ne l'est pas
-        // (semaine calendaire québécoise : dimanche à samedi). On affiche donc le samedi, dernier
-        // jour réellement compté, pour ne plus avoir ce "trou" d'un jour.
+
         const finAffichee = estSemaine ? new Date(new Date(rapport.fin).getTime() - 86400000) : new Date(rapport.fin);
         document.getElementById('rapports-periode-dates').textContent =
           'Du ' + fmtDate(rapport.debut).split(' ')[0] + ' au ' + fmtDate(finAffichee).split(' ')[0];
@@ -8735,8 +8432,7 @@
       const recherche = document.getElementById('rapports-recherche').value.trim().toLowerCase();
       let lignes = RAPPORTS_DONNEES_BRUTES;
       if (RAPPORTS_TYPE_FILTRE === 'Dépenses') {
-        // Les vraies catégories stockées sont "Réapprovisionnement stock" et "Dépense" - jamais
-        // littéralement "Achat" - donc on regroupe les deux sous ce filtre.
+
         lignes = lignes.filter(l => l.categorie === 'Réapprovisionnement stock' || l.categorie === 'Dépense');
       } else if (RAPPORTS_TYPE_FILTRE !== 'Tout') {
         lignes = lignes.filter(l => l.categorie === RAPPORTS_TYPE_FILTRE);
@@ -8755,7 +8451,6 @@
       ).join('') || '<tr><td colspan="7" class="small">Aucune ligne correspondante.</td></tr>';
     }
 
-    /* ===================== Contrats ===================== */
     let CONTRATS_CHARGES = false;
     function chargerContrats() {
       if (CONTRATS_CHARGES) { renderContratsTable(); return; }
@@ -8810,7 +8505,6 @@
       }).withFailureHandler(onError).supprimerContrat(id, CURRENT_USER.sessionToken);
     }
 
-    /* ===================== Utilitaires ===================== */
     function money(n) {
       const devise = (DATA && DATA.devise) || '$';
       return devise + Number(n || 0).toLocaleString('fr-FR', { maximumFractionDigits: 2 });
@@ -8820,20 +8514,19 @@
       const date = new Date(d);
       return date.toLocaleDateString('fr-FR') + ' ' + date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
     }
-    // Miroir du helper serveur estValeurVraie_ : tolère une case cochée (true) ou du texte tapé
-    // à la main ("TRUE"/"true"/"VRAI"...) si la BDD a été éditée directement.
+
     function estValeurVraie_(valeur) {
       if (valeur === true) return true;
       if (typeof valeur === 'string') return ['true', 'vrai', '1'].indexOf(valeur.trim().toLowerCase()) !== -1;
       return false;
     }
-    // Même principe, pour détecter un "FALSE" explicite (NeedMasterPassword=FALSE).
+    
     function estValeurFausse_(valeur) {
       if (valeur === false) return true;
       if (typeof valeur === 'string') return ['false', 'faux', '0'].indexOf(valeur.trim().toLowerCase()) !== -1;
       return false;
     }
-    // Monogramme (initiale) au lieu d'un emoji - plus sobre, plus dans l'esprit Leopold's.
+    
     function initiale(nom) {
       return (nom || '?').trim().charAt(0).toUpperCase() || '?';
     }
