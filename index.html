@@ -17,8 +17,8 @@
     try {
       var __savedTheme = localStorage.getItem('sandystrip_theme');
 
-      if (__savedTheme === 'sombre' || __savedTheme === 'minuit') {
-        __savedTheme = 'pixelar';
+      if (__savedTheme === 'sombre' || __savedTheme === 'minuit' || __savedTheme === 'pixelar') {
+        __savedTheme = 'leopolds';
         localStorage.setItem('sandystrip_theme', __savedTheme);
       }
       if (__savedTheme) document.documentElement.setAttribute('data-theme', __savedTheme);
@@ -113,82 +113,12 @@
     [data-theme="sandystrip"] .settings-row-label {
       font-family: 'Bebas Neue', sans-serif; letter-spacing: 1px;
     }
-    [data-theme="pixelar"] {
-      --bg: #08060f; --bg-panel: #0f0b1c; --bg-card: #150f28; --bg-card2: #1d1536;
-      --border: #4a3a7a; --border-soft: #322559;
-      --text: #f0ecff; --text-mute: #a89bd6; --text-faint: #6f5fa3;
-      --pink: #ff2d95; --pink-deep: #c2005f;
-      --gold: #ffe14d; --cyan: #2de5ff;
-      --green: #39ff6a; --red: #ff3355;
-      font-family: 'VT323', monospace;
-      --anim-duree: .05s; --anim-easing: steps(2, jump-end);
-    }
-    /* Police terminal pour tout le texte courant - reste lisible malgré le côté rétro. */
-    [data-theme="pixelar"] body, [data-theme="pixelar"] input, [data-theme="pixelar"] textarea,
-    [data-theme="pixelar"] select, [data-theme="pixelar"] table, [data-theme="pixelar"] .card,
-    [data-theme="pixelar"] .small, [data-theme="pixelar"] label {
-      font-family: 'VT323', monospace; letter-spacing: .3px; font-size: 1.1em;
-    }
-    /* Vraie police pixel-art (façon borne d'arcade) sur tout ce qui doit "taper à l'oeil" - titres,
-       navigation, boutons. Volontairement pas sur le corps de texte : illisible en dessous de 20px. */
-    [data-theme="pixelar"] h2, [data-theme="pixelar"] h3, [data-theme="pixelar"] .brand,
-    [data-theme="pixelar"] #nav-items button, [data-theme="pixelar"] .ms-sidebar-item,
-    [data-theme="pixelar"] button, [data-theme="pixelar"] .btn-primary, [data-theme="pixelar"] .btn-gold,
-    [data-theme="pixelar"] .btn-ghost, [data-theme="pixelar"] .btn-danger {
-      font-family: 'Press Start 2P', 'VT323', monospace; letter-spacing: 0; text-transform: uppercase;
-    }
-    [data-theme="pixelar"] h2, [data-theme="pixelar"] h3 { font-size: .85em; line-height: 1.6; }
-    [data-theme="pixelar"] .brand { font-size: .8em; }
-    [data-theme="pixelar"] #nav-items button, [data-theme="pixelar"] .ms-sidebar-item { font-size: .6em; line-height: 1.8; }
-    [data-theme="pixelar"] button, [data-theme="pixelar"] .btn-primary, [data-theme="pixelar"] .btn-gold,
-    [data-theme="pixelar"] .btn-ghost, [data-theme="pixelar"] .btn-danger { font-size: .62em; }
-    [data-theme="pixelar"] .kpi-label, [data-theme="pixelar"] th, [data-theme="pixelar"] .filter-btn,
-    [data-theme="pixelar"] .kpi-value, [data-theme="pixelar"] .settings-row-label {
-      font-family: 'VT323', monospace; font-size: 1.35em; letter-spacing: .5px;
-    }
-    /* Coins carrés partout, jamais de courbe dans un jeu 8-bit. */
-    [data-theme="pixelar"] .card, [data-theme="pixelar"] button, [data-theme="pixelar"] input,
-    [data-theme="pixelar"] textarea, [data-theme="pixelar"] select, [data-theme="pixelar"] .modal-card,
-    [data-theme="pixelar"] .pill, [data-theme="pixelar"] .toast, [data-theme="pixelar"] .notif-carte {
-      border-radius: 0 !important;
-    }
-    /* Cadres épais façon fenêtre de jeu rétro, avec une "ombre dure" décalée (pas de flou) - LA
-       signature visuelle des interfaces 8-bit, contrairement à toutes les ombres douces du reste de l'app. */
-    [data-theme="pixelar"] .card {
-      border: 3px solid var(--border); box-shadow: 5px 5px 0 0 var(--bg-card2);
-    }
-    [data-theme="pixelar"] button, [data-theme="pixelar"] .btn-primary, [data-theme="pixelar"] .btn-gold,
-    [data-theme="pixelar"] .btn-ghost {
-      border: 3px solid var(--text); box-shadow: 4px 4px 0 0 rgba(0,0,0,.6); transition: none;
-    }
-    [data-theme="pixelar"] button:active, [data-theme="pixelar"] .btn-primary:active,
-    [data-theme="pixelar"] .btn-gold:active, [data-theme="pixelar"] .btn-ghost:active {
-      transform: translate(4px, 4px); box-shadow: none;
-    }
-    [data-theme="pixelar"] .btn-primary { background: var(--pink); border-color: #ffb3dc; color: #1a0410; }
-    [data-theme="pixelar"] .btn-danger { border: 3px solid #ffb3bf; box-shadow: 4px 4px 0 0 rgba(0,0,0,.6); }
-    /* Lueur néon façon enseigne d'arcade sur les accents et liens. */
-    [data-theme="pixelar"] .kpi-gold, [data-theme="pixelar"] a.linklike {
-      text-shadow: 0 0 4px currentColor, 0 0 10px currentColor;
-    }
-    /* Curseur clignotant façon écran titre "PRESS START", posé après le logo. */
-    [data-theme="pixelar"] .brand::after {
-      content: '_'; margin-left: 6px; color: var(--cyan); animation: pixelar-clignote .8s steps(1) infinite;
-    }
-    @keyframes pixelar-clignote { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }
-    /* Lignes de balayage CRT + léger scintillement, façon vieil écran cathodique. */
-    [data-theme="pixelar"]::before {
-      content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 9999;
-      background: repeating-linear-gradient(0deg, rgba(0,0,0,.18) 0px, rgba(0,0,0,.18) 1px, transparent 1px, transparent 3px);
-      mix-blend-mode: multiply; opacity: .55;
-    }
-
     [data-theme="toutoule"] {
-      --bg: #05030a; --bg-panel: #0a0614; --bg-card: #120a1f; --bg-card2: #1a1030;
-      --border: #3d2a66; --border-soft: #291c4a;
-      --text: #ece6ff; --text-mute: #b0a0e0; --text-faint: #7566a3;
-      --pink: #8b5cf6; --pink-deep: #6d28d9;
-      --gold: #a78bfa; --cyan: #7dd3fc;
+      --bg: #170a2e; --bg-panel: #1d0f3a; --bg-card: #241347; --bg-card2: #2d1857;
+      --border: #4d2f8a; --border-soft: #38226b;
+      --text: #ece6ff; --text-mute: #b0a0e0; --text-faint: #8879bb;
+      --pink: #a565f7; --pink-deep: #7c3aed;
+      --gold: #b794f6; --cyan: #7dd3fc;
       --green: #22ff6e; --red: #ff2d4d;
     }
     /* Aucun jaune nulle part : le doré générique de l'app est remplacé par le même violet que
@@ -646,7 +576,6 @@
     .filter-btn-danger { color: var(--red); }
     .subnav-separator { width: 1px; align-self: stretch; background: var(--border); margin: 0 4px; }
     
-    body.dispense-mdp-maitre .master-pwd-bloc { display: none !important; }
     
     body.succursales-off .succursale-field { display: none !important; }
     .subnav-block { padding-bottom: 14px; border-bottom: 1px solid var(--border-soft); }
@@ -970,12 +899,12 @@
         <div class="small mt16" style="text-align:center;"><a class="linklike" onclick="basculerInscriptionClient()">Retour à la connexion</a></div>
       </div>
       <div id="login-bootstrap" class="hidden">
-        <div class="small mb10">Aucun compte n'existe encore. Crée le premier compte (Propriétaire) avec le mot de passe maître.</div>
+        <div class="small mb10">Aucun compte n'existe encore. Crée le premier compte (Propriétaire).</div>
         <label>Ton nom</label>
         <input id="boot-nom">
         <label class="mt10">Identifiant souhaité</label>
         <input id="boot-identifiant" placeholder="prenom.nom@pixelar.rp">
-        <label class="mt10">Mot de passe maître</label>
+        <label class="mt10">Mot de passe</label>
         <input id="boot-pwd" type="password">
         <button class="btn-primary btn-block" onclick="doBootstrap()">Créer mon compte Propriétaire</button>
         <div class="err" id="boot-err"></div>
@@ -1377,18 +1306,11 @@
           <details class="ms-groupe" open>
             <summary>Configuration du Fisc<div class="small">Taux prélevé sur les revenus</div></summary>
             <div class="ms-groupe-corps">
-            <div class="small mb10">Pourcentage prélevé sur les revenus, affiché dans le Tableau de bord et les Stats par succursale. Le mot de passe maître est requis pour l'enregistrer.</div>
+            <div class="small mb10">Pourcentage prélevé sur les revenus, affiché dans le Tableau de bord et les Stats par succursale.</div>
             <label>Taux du Fisc</label>
             <div class="flex">
               <input id="patron-taux-fisc" type="number" min="0" max="100" style="max-width:100px;">
               <span>%</span>
-            </div>
-            <div class="master-pwd-bloc mt10">
-              <label>Mot de passe maître</label>
-              <div class="password-wrap" style="max-width:260px;">
-                <input id="patron-fisc-pwd" type="password" placeholder="Mot de passe maître">
-                <button type="button" class="eye-btn" onclick="togglePasswordVisibility('patron-fisc-pwd', this)">Afficher</button>
-              </div>
             </div>
             <button class="btn-primary mt16" onclick="enregistrerTauxFiscPatron()">Enregistrer</button>
             <div class="err" id="patron-fisc-err"></div>
@@ -2050,13 +1972,7 @@
       <section id="tab-master-settings" class="hidden">
         <div id="master-settings-gate" class="card">
           <h2>Master Settings</h2>
-          <div class="small mb10">Cette section est réservée au détenteur du mot de passe maître. Entre-le pour continuer.</div>
-          <div class="password-wrap" style="max-width:260px;">
-            <input id="master-settings-pwd" type="password" placeholder="Mot de passe maître">
-            <button type="button" class="eye-btn" onclick="togglePasswordVisibility('master-settings-pwd', this)">Afficher</button>
-          </div>
-          <button class="btn-primary mt16" onclick="deverrouillerMasterSettings()">Déverrouiller</button>
-          <div class="err" id="master-settings-err"></div>
+          <div class="small">Tu n'as pas accès à cette section. Demande à quelqu'un ayant les droits d'activer "Master Settings" sur ta fiche employé (Custom → Rôles).</div>
         </div>
         <div id="master-settings-content" class="hidden ms-layout">
           <div class="ms-sidebar">
@@ -2115,7 +2031,6 @@
               <div><div class="settings-row-label">Thème principal</div><div class="small">Appliqué par défaut à qui n'a pas choisi le sien.</div></div>
               <select id="master-theme-defaut" style="width:auto;">
                 <option value="leopolds">Leopold's</option>
-                <option value="pixelar">Pixelar</option>
                 <option value="toutoule">Toutoule</option>
                 <option value="sandystrip">Sandy Strip</option>
                 <option value="clair">Clair</option>
@@ -2137,13 +2052,6 @@
             </div>
           </details>
           <div class="card mt10">
-            <div class="master-pwd-bloc">
-              <label>Mot de passe maître</label>
-              <div class="password-wrap" style="max-width:260px;">
-                <input id="ms-general-pwd" type="password" placeholder="Mot de passe maître">
-                <button type="button" class="eye-btn" onclick="togglePasswordVisibility('ms-general-pwd', this)">Afficher</button>
-              </div>
-            </div>
             <button class="btn-primary mt16" onclick="enregistrerGeneral()">Enregistrer tout</button>
             <div class="err" id="ms-general-err"></div>
           </div>
@@ -2172,13 +2080,6 @@
                 <div id="master-adminlecture-liste"></div>
               </div>
             </div>
-            <div class="master-pwd-bloc mt16">
-              <label>Mot de passe maître</label>
-              <div class="password-wrap" style="max-width:260px;">
-                <input id="ms-securite-pwd" type="password" placeholder="Mot de passe maître">
-                <button type="button" class="eye-btn" onclick="togglePasswordVisibility('ms-securite-pwd', this)">Afficher</button>
-              </div>
-            </div>
             <button class="btn-primary mt16" onclick="enregistrerSecuriteAcces()">Enregistrer tout</button>
             <div class="err" id="ms-securite-err"></div>
           </div>
@@ -2193,13 +2094,6 @@
               <div class="flex" id="ms-mode-reordo-boutons"></div>
             </div>
             <div id="opti-menus-liste"></div>
-            <div class="master-pwd-bloc mt10">
-              <label>Mot de passe maître</label>
-              <div class="password-wrap" style="max-width:260px;">
-                <input id="opti-menus-pwd" type="password" placeholder="Mot de passe maître">
-                <button type="button" class="eye-btn" onclick="togglePasswordVisibility('opti-menus-pwd', this)">Afficher</button>
-              </div>
-            </div>
             <button class="btn-primary mt16" onclick="enregistrerMenusActifs()">Enregistrer</button>
             <div class="err" id="opti-menus-err"></div>
             </div>
@@ -2242,13 +2136,6 @@
             <h3 class="mt16">Sections du Tableau de bord</h3>
             <div id="perm-sections-liste"></div>
 
-            <div class="master-pwd-bloc">
-            <label class="mt10">Mot de passe maître</label>
-            <div class="password-wrap" style="max-width:260px;">
-              <input id="perm-role-pwd" type="password" placeholder="Mot de passe maître">
-              <button type="button" class="eye-btn" onclick="togglePasswordVisibility('perm-role-pwd', this)">Afficher</button>
-            </div>
-            </div>
             <div class="flex mt16">
               <button class="btn-primary" onclick="enregistrerPermissionsRoleSelectionne()">Enregistrer pour ce rôle</button>
               <button class="btn-ghost" onclick="retirerPermissionsRoleSelectionne()">Revenir aux règles par défaut</button>
@@ -2270,13 +2157,6 @@
             <div class="settings-row" style="border-bottom:none;">
               <div><div class="settings-row-label">Réservations</div><div class="small">Désactive uniquement les réservations - Compte client reste actif. Coupe complètement la page, les alertes et le traitement, même si Système client ci-dessus est activé.</div></div>
               <label class="remember-label"><input type="checkbox" id="ms-reservations-active"> <span>Activer</span></label>
-            </div>
-            <div class="master-pwd-bloc">
-              <label>Mot de passe maître</label>
-              <div class="password-wrap" style="max-width:260px;">
-                <input id="ms-page-client-pwd" type="password" placeholder="Mot de passe maître">
-                <button type="button" class="eye-btn" onclick="togglePasswordVisibility('ms-page-client-pwd', this)">Afficher</button>
-              </div>
             </div>
             <button class="btn-primary mt16" onclick="definirPageClientActive()">Enregistrer</button>
             <div class="err" id="ms-page-client-err"></div>
@@ -2410,11 +2290,6 @@
     <div class="modal-card" style="max-width:420px;">
       <h2 style="margin-top:0;">Confirmer la réinitialisation</h2>
       <p class="small" id="reset-confirmation-texte"></p>
-      <label>Mot de passe maître</label>
-      <div class="password-wrap">
-        <input id="reset-confirmation-pwd" type="password" placeholder="Mot de passe maître">
-        <button type="button" class="eye-btn" onclick="togglePasswordVisibility('reset-confirmation-pwd', this)">Afficher</button>
-      </div>
       <div class="flex mt16">
         <button class="btn-danger" onclick="confirmerResetCible()">Oui, réinitialiser</button>
         <button class="btn-ghost" onclick="fermerConfirmationReset()">Annuler</button>
@@ -2907,7 +2782,7 @@
   </script>
   <script>
 
-    const VERSION_CLIENT = 'build-2026-08-03-U';
+    const VERSION_CLIENT = 'build-2026-08-03-W';
 
     const APP_URL = (function () {
       const brut = '<?= appUrl ?>';
@@ -2928,7 +2803,7 @@
       'getMessagesChat', 'getLiensDJ', 'getCommissionsSemaine', 'getAbsences',
       'getMessagesPrivesEntre', 'getMesConversations', 'getToutesConversationsPrivees',
       'getJournalActivite', 'getPresenceActuelle', 'rechercherMessages',
-      'verifierMotDePasseMaitre', 'masterPasswordConfigured', 'identifiantDisponible', 'peutVoirMasterSettings',
+      'identifiantDisponible', 'peutVoirMasterSettings',
       'loginAvecIdentifiant'
     ]);
     
@@ -2973,7 +2848,7 @@
         'dashboard.hideLeaderboard': 'Masquer le classement', 'dashboard.showLeaderboard': 'Afficher le classement',
         'settings.menuPosition': 'Position du menu', 'settings.theme': 'Thème', 'settings.language': 'Langue',
         'settings.left': 'Gauche', 'settings.right': 'Droite',
-        'theme.leopolds': "Leopold's", 'theme.clair': 'Clair', 'theme.sandystrip': 'Sandy Strip', 'theme.pixelar': 'Pixelar', 'theme.toutoule': 'Toutoule',
+        'theme.leopolds': "Leopold's", 'theme.clair': 'Clair', 'theme.sandystrip': 'Sandy Strip', 'theme.toutoule': 'Toutoule',
         'lang.fr': 'Français', 'lang.en': 'English', 'lang.es': 'Español', 'lang.it': 'Italiano',
         'login.identifiant': 'Identifiant', 'login.password': 'Mot de passe',
         'login.remember': 'Enregistrer mon identifiant', 'login.enter': 'Entrer'
@@ -2988,7 +2863,7 @@
         'dashboard.hideLeaderboard': 'Hide leaderboard', 'dashboard.showLeaderboard': 'Show leaderboard',
         'settings.menuPosition': 'Menu position', 'settings.theme': 'Theme', 'settings.language': 'Language',
         'settings.left': 'Left', 'settings.right': 'Right',
-        'theme.leopolds': "Leopold's", 'theme.clair': 'Light', 'theme.sandystrip': 'Sandy Strip', 'theme.pixelar': 'Pixelar', 'theme.toutoule': 'Toutoule',
+        'theme.leopolds': "Leopold's", 'theme.clair': 'Light', 'theme.sandystrip': 'Sandy Strip', 'theme.toutoule': 'Toutoule',
         'lang.fr': 'Français', 'lang.en': 'English', 'lang.es': 'Español', 'lang.it': 'Italiano',
         'login.identifiant': 'Username', 'login.password': 'Password',
         'login.remember': 'Remember my username', 'login.enter': 'Enter'
@@ -3003,7 +2878,7 @@
         'dashboard.hideLeaderboard': 'Ocultar clasificación', 'dashboard.showLeaderboard': 'Mostrar clasificación',
         'settings.menuPosition': 'Posición del menú', 'settings.theme': 'Tema', 'settings.language': 'Idioma',
         'settings.left': 'Izquierda', 'settings.right': 'Derecha',
-        'theme.leopolds': "Leopold's", 'theme.clair': 'Claro', 'theme.sandystrip': 'Sandy Strip', 'theme.pixelar': 'Pixelar', 'theme.toutoule': 'Toutoule',
+        'theme.leopolds': "Leopold's", 'theme.clair': 'Claro', 'theme.sandystrip': 'Sandy Strip', 'theme.toutoule': 'Toutoule',
         'lang.fr': 'Français', 'lang.en': 'English', 'lang.es': 'Español', 'lang.it': 'Italiano',
         'login.identifiant': 'Usuario', 'login.password': 'Contraseña',
         'login.remember': 'Recordar mi usuario', 'login.enter': 'Entrar'
@@ -3018,7 +2893,7 @@
         'dashboard.hideLeaderboard': 'Nascondi classifica', 'dashboard.showLeaderboard': 'Mostra classifica',
         'settings.menuPosition': 'Posizione del menu', 'settings.theme': 'Tema', 'settings.language': 'Lingua',
         'settings.left': 'Sinistra', 'settings.right': 'Destra',
-        'theme.leopolds': "Leopold's", 'theme.clair': 'Chiaro', 'theme.sandystrip': 'Sandy Strip', 'theme.pixelar': 'Pixelar', 'theme.toutoule': 'Toutoule',
+        'theme.leopolds': "Leopold's", 'theme.clair': 'Chiaro', 'theme.sandystrip': 'Sandy Strip', 'theme.toutoule': 'Toutoule',
         'lang.fr': 'Français', 'lang.en': 'English', 'lang.es': 'Español', 'lang.it': 'Italiano',
         'login.identifiant': 'Nome utente', 'login.password': 'Password',
         'login.remember': 'Ricorda il mio nome utente', 'login.enter': 'Entra'
@@ -3041,14 +2916,13 @@
       renderParametresLangueBoutons();
     }
 
-    const THEMES = [['leopolds', 'theme.leopolds'], ['pixelar', 'theme.pixelar'], ['sandystrip', 'theme.sandystrip'], ['clair', 'theme.clair'], ['toutoule', 'theme.toutoule']];
+    const THEMES = [['leopolds', 'theme.leopolds'], ['sandystrip', 'theme.sandystrip'], ['clair', 'theme.clair'], ['toutoule', 'theme.toutoule']];
     
     const THEMES_APERCU = {
       leopolds: { bg: '#000000', accent: '#e8b923', gold: '#ffcf40', police: "'Playfair Display', Georgia, serif", desc: 'Cabaret noir et or' },
-      pixelar: { bg: '#08060f', accent: '#ff2d95', gold: '#2de5ff', police: "'Press Start 2P', 'VT323', monospace", desc: 'Borne d\'arcade 8-bit' },
       sandystrip: { bg: '#17040e', accent: '#ff2d78', gold: '#ffcf4d', police: "'Bebas Neue', sans-serif", desc: 'Néon, club énergique' },
       clair: { bg: '#f4f2f7', accent: '#e01d78', gold: '#b8790c', police: "'Manrope', sans-serif", desc: 'Sobre, lumineux' },
-      toutoule: { bg: '#0a0614', accent: '#8b5cf6', gold: '#8b5cf6', police: "'Manrope', sans-serif", desc: 'Midnight purple, contrasté' }
+      toutoule: { bg: '#170a2e', accent: '#a565f7', gold: '#a565f7', police: "'Manrope', sans-serif", desc: 'Midnight purple, contrasté' }
     };
     function appliquerTheme(theme) {
       document.documentElement.setAttribute('data-theme', theme);
@@ -3197,9 +3071,7 @@
         let reglage = SONS_VENTE_DISPONIBLES[choix];
         const theme = document.documentElement.getAttribute('data-theme') || 'leopolds';
         if (!reglage) {
-          
-          if (theme === 'pixelar') reglage = { type: 'square', freq: 1046, duree: 0.12, volume: 0.12 };
-          else if (theme === 'sandystrip') reglage = { type: 'sawtooth', freq: 660, duree: 0.22, volume: 0.16 };
+          if (theme === 'sandystrip') reglage = { type: 'sawtooth', freq: 660, duree: 0.22, volume: 0.16 };
           else if (theme === 'clair') reglage = { type: 'sine', freq: 1200, duree: 0.1, volume: 0.08 };
           else reglage = { type: 'triangle', freq: 440, duree: 0.5, volume: 0.14 };
         }
@@ -4271,7 +4143,7 @@
         document.getElementById('cigare-nom').value = ''; document.getElementById('cigare-description').value = ''; document.getElementById('cigare-prix').value = '';
         showToast('Cigare ajouté.');
       }).withFailureHandler(function (err) { errEl.textContent = err.message || String(err); })
-        .addCigare(nom, description, prix, null, CURRENT_USER.ID);
+        .addCigare(nom, description, prix, CURRENT_USER.sessionToken);
     }
     function supprimerCigareUI(id) {
       confirmerActionAvantExecution('Supprimer le cigare', 'Êtes-vous sûr de vouloir supprimer ce cigare de la carte ?', function () {
@@ -4279,25 +4151,23 @@
           DATA.cigares = (DATA.cigares || []).filter(c => c.ID !== id);
           renderMsCigaresListe();
           showToast('Cigare supprimé.');
-        }).withFailureHandler(onError).supprimerCigare(id, null, CURRENT_USER.ID);
+        }).withFailureHandler(onError).supprimerCigare(id, CURRENT_USER.sessionToken);
       }, true);
     }
     function definirPageClientActive() {
       const actif = document.getElementById('ms-page-client-active').checked;
       const vitrineActif = document.getElementById('ms-vitrine-active').checked;
       const resaActif = document.getElementById('ms-reservations-active').checked;
-      const pwd = document.getElementById('ms-page-client-pwd').value;
       const errEl = document.getElementById('ms-page-client-err');
       errEl.textContent = '';
       Promise.all([
-        new Promise((resolve, reject) => google.script.run.withSuccessHandler(resolve).withFailureHandler(reject).setPageClientActive(actif, pwd)),
-        new Promise((resolve, reject) => google.script.run.withSuccessHandler(resolve).withFailureHandler(reject).setVitrineActive(vitrineActif, pwd)),
-        new Promise((resolve, reject) => google.script.run.withSuccessHandler(resolve).withFailureHandler(reject).setReservationsActives(resaActif, pwd))
+        new Promise((resolve, reject) => google.script.run.withSuccessHandler(resolve).withFailureHandler(reject).setPageClientActive(actif, CURRENT_USER.sessionToken)),
+        new Promise((resolve, reject) => google.script.run.withSuccessHandler(resolve).withFailureHandler(reject).setVitrineActive(vitrineActif, CURRENT_USER.sessionToken)),
+        new Promise((resolve, reject) => google.script.run.withSuccessHandler(resolve).withFailureHandler(reject).setReservationsActives(resaActif, CURRENT_USER.sessionToken))
       ]).then(function () {
         DATA.pageClientActive = actif;
         DATA.vitrineActive = vitrineActif;
         DATA.reservationsActives = resaActif;
-        document.getElementById('ms-page-client-pwd').value = '';
         appliquerPageClientActive_();
         showToast('Réglage enregistré.');
       }).catch(function (err) { errEl.textContent = (err && (err.message || err)) || 'Erreur.'; });
@@ -4453,7 +4323,7 @@
           enterApp();
         }).withFailureHandler(function (err) { masquerChargement(); errEl.textContent = err.message || String(err); })
           .loginAvecIdentifiant(identifiant, pwd);
-      }).withFailureHandler(function (err) { masquerChargement(); errEl.textContent = err.message || String(err); }).addEmploye('', pwd, nom, identifiant, 'Propriétaire', 'Direction', '', 0, 0, 0, pwd, '');
+      }).withFailureHandler(function (err) { masquerChargement(); errEl.textContent = err.message || String(err); }).addEmploye('', nom, identifiant, 'Propriétaire', 'Direction', '', 0, 0, 0, pwd, '');
     }
 
     function logout() {
@@ -4563,7 +4433,6 @@
       try {
         const firstTab = renderNav();
         appliquerVisibiliteSuccursales();
-        appliquerDispenseMotDePasseMaitre();
         chargerBlocNotes_();
 
         renderCatalogueCaisse(); renderCartUI();
@@ -4710,12 +4579,6 @@
 
     function appliquerVisibiliteSuccursales() {
       document.body.classList.toggle('succursales-off', !!DATA && DATA.multiSuccursalesActif === false);
-    }
-
-    function appliquerDispenseMotDePasseMaitre() {
-
-      const dispense = !!CURRENT_USER && estValeurFausse_(CURRENT_USER.NeedMasterPassword);
-      document.body.classList.toggle('dispense-mdp-maitre', dispense);
     }
 
     let PROFIL_PERIODE = 'semaine';
@@ -6169,7 +6032,7 @@
           renderVipOffresListe();
           showToast('Offre modifiée.');
         }).withFailureHandler(function (err) { errEl.textContent = err.message || String(err); })
-          .updateVipOffre(CURRENT_USER.ID, null, VIP_OFFRE_EN_EDITION, nom, duree, prix, description, reduction);
+          .updateVipOffre(CURRENT_USER.sessionToken, VIP_OFFRE_EN_EDITION, nom, duree, prix, description, reduction);
       } else {
         google.script.run.withSuccessHandler(function (r) {
           DATA.vipOffres = DATA.vipOffres || [];
@@ -6178,7 +6041,7 @@
           renderVipOffresListe();
           showToast('Offre créée.');
         }).withFailureHandler(function (err) { errEl.textContent = err.message || String(err); })
-          .addVipOffre(CURRENT_USER.ID, null, nom, duree, prix, description, reduction);
+          .addVipOffre(CURRENT_USER.sessionToken, nom, duree, prix, description, reduction);
       }
     }
     function supprimerVipOffreUI(id) {
@@ -6188,7 +6051,7 @@
         renderVipOffresListe();
         renderVipOffreSelect();
         showToast('Offre supprimée.');
-      }).withFailureHandler(onError).deleteVipOffre(CURRENT_USER.ID, null, id);
+      }).withFailureHandler(onError).deleteVipOffre(CURRENT_USER.sessionToken, id);
     }
 
     let IMPOTS_CHARGES = false;
@@ -6905,7 +6768,7 @@
         google.script.run.withFailureHandler(function () {}).reordonnerEmployes(DATA.employes.map(e => e.ID));
         showToast('Employé ajouté - identifiants à communiquer au joueur.');
       }).withFailureHandler(function (err) { errEl.textContent = err.message || String(err); })
-        .addEmploye(CURRENT_USER.ID, '', nom, identifiant, role, permission, succursale, commission, salaire, 0, motDePasse, '', roleSecondaire);
+        .addEmploye(CURRENT_USER.sessionToken, nom, identifiant, role, permission, succursale, commission, salaire, 0, motDePasse, '', roleSecondaire);
     }
 
     function ouvrirModifEmploye(id) {
@@ -7048,9 +6911,7 @@
       document.getElementById('edit-vire-zone').innerHTML =
         '<div class="small mb10">La fiche reste dans la BDD (historique conservé) - ce n\'est pas une suppression. La personne verra un écran de blocage à sa prochaine connexion.</div>' +
         '<textarea id="edit-vire-raison" rows="2" placeholder="Raison du renvoi (facultatif)..." style="margin-bottom:10px;"></textarea>' +
-        '<div class="flex"><div class="master-pwd-bloc password-wrap" style="width:180px;"><input id="edit-vire-pwd" type="password" placeholder="Mot de passe maître (optionnel)">' +
-        '<button type="button" class="eye-btn" onclick="togglePasswordVisibility(\'edit-vire-pwd\', this)">Afficher</button></div>' +
-        '<button class="btn-danger" onclick="confirmerVireEmploye()">Confirmer le renvoi</button>' +
+        '<div class="flex"><button class="btn-danger" onclick="confirmerVireEmploye()">Confirmer le renvoi</button>' +
         '<button class="btn-ghost" onclick="annulerVireEmploye()">Annuler</button></div>';
     }
     function annulerVireEmploye() {
@@ -7058,7 +6919,6 @@
       if (m) renderZoneVire(m);
     }
     function confirmerVireEmploye() {
-      const pwd = document.getElementById('edit-vire-pwd').value;
       const raison = document.getElementById('edit-vire-raison').value.trim();
       const idAVirer = EDIT_EMPLOYE_ID;
       const errEl = document.getElementById('edit-err');
@@ -7069,7 +6929,7 @@
         renderSectionPatron();
         if (m) renderZoneVire(m);
         showToast('Employé viré.');
-      }).withFailureHandler(function (err) { errEl.textContent = err.message || String(err); }).virerEmploye(CURRENT_USER.sessionToken, pwd, idAVirer, raison);
+      }).withFailureHandler(function (err) { errEl.textContent = err.message || String(err); }).virerEmploye(CURRENT_USER.sessionToken, idAVirer, raison);
     }
     function reintegrerEmployeUI() {
       const idAReintegrer = EDIT_EMPLOYE_ID;
@@ -8000,7 +7860,7 @@
         renderSectionPatron();
         showToast('Accès Fisc créé.');
       }).withFailureHandler(function (err) { errEl.textContent = err.message || String(err); })
-        .addEmploye(CURRENT_USER.ID, '', 'Fisc', identifiant, 'Fisc', 'Employée', '', 0, 0, 0, motDePasse, '');
+        .addEmploye(CURRENT_USER.sessionToken, 'Fisc', identifiant, 'Fisc', 'Employée', '', 0, 0, 0, motDePasse, '');
     }
     function chargerTauxFiscPatron() {
       google.script.run.withSuccessHandler(function (taux) {
@@ -8009,13 +7869,11 @@
     }
     function enregistrerTauxFiscPatron() {
       const taux = Number(document.getElementById('patron-taux-fisc').value);
-      const pwd = document.getElementById('patron-fisc-pwd').value;
       const errEl = document.getElementById('patron-fisc-err');
       errEl.textContent = '';
       google.script.run.withSuccessHandler(function () {
-        document.getElementById('patron-fisc-pwd').value = '';
         showToast('Taux du Fisc mis à jour.');
-      }).withFailureHandler(function (err) { errEl.textContent = err.message || String(err); }).setTauxFisc(taux, pwd, CURRENT_USER.ID);
+      }).withFailureHandler(function (err) { errEl.textContent = err.message || String(err); }).setTauxFisc(taux, CURRENT_USER.sessionToken, CURRENT_USER.ID);
     }
 
     let CONSO_SELECTION = {};
@@ -8061,25 +7919,25 @@
 
     let RESET_CIBLE_ACTUELLE = null;
     function ouvrirConfirmationReset(cible, description) {
-      RESET_CIBLE_ACTUELLE = cible;
-      document.getElementById('reset-confirmation-texte').textContent = 'Tu es sur le point de supprimer définitivement ' + description + '. Cette action est irréversible.';
-      document.getElementById('reset-confirmation-pwd').value = '';
-      document.getElementById('reset-confirmation-err').textContent = '';
-      document.getElementById('reset-confirmation-modal').classList.remove('hidden');
+      confirmerActionAvantExecution('Réinitialiser ' + description + ' ?', 'Cette action est irréversible - toutes les données seront définitivement supprimées. Une seconde confirmation te sera demandée juste après.', function () {
+        RESET_CIBLE_ACTUELLE = cible;
+        document.getElementById('reset-confirmation-texte').textContent = 'Tu es sur le point de supprimer définitivement ' + description + '. Cette action est irréversible.';
+        document.getElementById('reset-confirmation-err').textContent = '';
+        document.getElementById('reset-confirmation-modal').classList.remove('hidden');
+      }, true);
     }
     function fermerConfirmationReset() {
       document.getElementById('reset-confirmation-modal').classList.add('hidden');
       RESET_CIBLE_ACTUELLE = null;
     }
     function confirmerResetCible() {
-      const pwd = document.getElementById('reset-confirmation-pwd').value;
       const errEl = document.getElementById('reset-confirmation-err');
       errEl.textContent = '';
       google.script.run.withSuccessHandler(function () {
         showToast('Réinitialisation effectuée.');
         fermerConfirmationReset();
         setTimeout(function () { location.reload(); }, 800);
-      }).withFailureHandler(function (err) { errEl.textContent = err.message || String(err); }).resetDonnees(RESET_CIBLE_ACTUELLE, pwd);
+      }).withFailureHandler(function (err) { errEl.textContent = err.message || String(err); }).resetDonnees(RESET_CIBLE_ACTUELLE, CURRENT_USER.sessionToken);
     }
 
     function renderMasterSettingsGate() {
@@ -8091,29 +7949,8 @@
         } else {
           document.getElementById('master-settings-gate').classList.remove('hidden');
           document.getElementById('master-settings-content').classList.add('hidden');
-          google.script.run.withSuccessHandler(function (configure) {
-            if (!configure) {
-              document.getElementById('master-settings-err').textContent = '';
-              document.querySelector('#master-settings-gate .small').textContent = 'Aucun mot de passe maître n\'est configuré - choisis-en un pour continuer.';
-            }
-          }).withFailureHandler(function () {}).masterPasswordConfigured();
         }
       }).withFailureHandler(onError).peutVoirMasterSettings(CURRENT_USER.ID);
-    }
-    function deverrouillerMasterSettings() {
-      const pwd = document.getElementById('master-settings-pwd').value;
-      const errEl = document.getElementById('master-settings-err');
-      errEl.textContent = '';
-      google.script.run.withSuccessHandler(function (ok) {
-        if (ok) {
-          CAN_SEE_MASTER_SETTINGS = true;
-          document.getElementById('master-settings-gate').classList.add('hidden');
-          document.getElementById('master-settings-content').classList.remove('hidden');
-          preremplirMasterSettings();
-        } else {
-          errEl.textContent = 'Mot de passe incorrect.';
-        }
-      }).withFailureHandler(function (err) { errEl.textContent = err.message || String(err); }).verifierMotDePasseMaitre(pwd);
     }
 
     function preremplirMasterSettings() {
@@ -8208,16 +8045,14 @@
       const actifs = Array.from(document.querySelectorAll('.opti-menu-check:checked')).map(el => el.value);
       const desactives = menusDesactivables_().map(o => o[0]).filter(id => actifs.indexOf(id) === -1);
       const ordre = menusEnOrdreActuel_().map(o => o[0]);
-      const pwd = document.getElementById('opti-menus-pwd').value;
       const errEl = document.getElementById('opti-menus-err');
       errEl.textContent = '';
       Promise.all([
-        new Promise((resolve, reject) => google.script.run.withSuccessHandler(resolve).withFailureHandler(reject).setMenusDesactives(desactives, pwd, CURRENT_USER.ID)),
-        new Promise((resolve, reject) => google.script.run.withSuccessHandler(resolve).withFailureHandler(reject).setOrdreMenus(ordre, pwd, CURRENT_USER.ID))
+        new Promise((resolve, reject) => google.script.run.withSuccessHandler(resolve).withFailureHandler(reject).setMenusDesactives(desactives, CURRENT_USER.sessionToken, CURRENT_USER.ID)),
+        new Promise((resolve, reject) => google.script.run.withSuccessHandler(resolve).withFailureHandler(reject).setOrdreMenus(ordre, CURRENT_USER.sessionToken, CURRENT_USER.ID))
       ]).then(function () {
         DATA.menusDesactifs = desactives;
         DATA.ordreMenus = ordre;
-        document.getElementById('opti-menus-pwd').value = '';
         renderNav();
         showToast('Menus mis à jour.');
       }).catch(function (err) { errEl.textContent = (err && (err.message || err)) || 'Erreur.'; });
@@ -8265,7 +8100,7 @@
         
         enregistrerParametresGeneraux_(params, false);
       }).withFailureHandler(function (err) { errEl.textContent = err.message || String(err); })
-        .fusionnerSuccursales(nomPrincipal, params.pwd, CURRENT_USER.ID);
+        .fusionnerSuccursales(nomPrincipal, CURRENT_USER.sessionToken, CURRENT_USER.ID);
     }
     function deposerFaviconUI(event) {
       event.preventDefault();
@@ -8297,11 +8132,10 @@
       const themeDefaut = document.getElementById('master-theme-defaut').value;
       const autoLogin = document.getElementById('master-autologin').checked;
       const multiSuccursales = document.getElementById('master-multi-succursales').checked;
-      const pwd = document.getElementById('ms-general-pwd').value;
       const errEl = document.getElementById('ms-general-err');
       errEl.textContent = '';
 
-      const params = { messageJour, infoPublique, apropos, favicon, nomEntreprise, slogan, devise, themeDefaut, autoLogin, pwd };
+      const params = { messageJour, infoPublique, apropos, favicon, nomEntreprise, slogan, devise, themeDefaut, autoLogin };
 
       const enTrainDeDesactiver = DATA.multiSuccursalesActif && !multiSuccursales;
       if (enTrainDeDesactiver && (DATA.succursales || []).length >= 2) {
@@ -8312,19 +8146,18 @@
     }
     function enregistrerParametresGeneraux_(params, multiSuccursales) {
       const errEl = document.getElementById('ms-general-err');
-      const pwd = params.pwd;
 
       Promise.allSettled([
-        new Promise((resolve, reject) => google.script.run.withSuccessHandler(resolve).withFailureHandler(reject).setMessageDuJour(params.messageJour, pwd, CURRENT_USER.ID)),
-        new Promise((resolve, reject) => google.script.run.withSuccessHandler(resolve).withFailureHandler(reject).setInfoPublique(params.infoPublique, pwd, CURRENT_USER.ID)),
-        new Promise((resolve, reject) => google.script.run.withSuccessHandler(resolve).withFailureHandler(reject).setAPropos(params.apropos, pwd, CURRENT_USER.ID)),
-        new Promise((resolve, reject) => google.script.run.withSuccessHandler(resolve).withFailureHandler(reject).setFaviconVitrine(params.favicon, pwd, CURRENT_USER.ID)),
-        new Promise((resolve, reject) => google.script.run.withSuccessHandler(resolve).withFailureHandler(reject).setNomEntreprise(params.nomEntreprise, pwd, CURRENT_USER.ID)),
-        new Promise((resolve, reject) => google.script.run.withSuccessHandler(resolve).withFailureHandler(reject).setSlogan(params.slogan, pwd, CURRENT_USER.ID)),
-        new Promise((resolve, reject) => google.script.run.withSuccessHandler(resolve).withFailureHandler(reject).setDevise(params.devise, pwd, CURRENT_USER.ID)),
-        new Promise((resolve, reject) => google.script.run.withSuccessHandler(resolve).withFailureHandler(reject).setThemeDefaut(params.themeDefaut, pwd, CURRENT_USER.ID)),
-        new Promise((resolve, reject) => google.script.run.withSuccessHandler(resolve).withFailureHandler(reject).setAutoLoginActif(params.autoLogin, pwd, CURRENT_USER.ID)),
-        new Promise((resolve, reject) => google.script.run.withSuccessHandler(resolve).withFailureHandler(reject).setMultiSuccursalesActif(multiSuccursales, pwd, CURRENT_USER.ID))
+        new Promise((resolve, reject) => google.script.run.withSuccessHandler(resolve).withFailureHandler(reject).setMessageDuJour(params.messageJour, CURRENT_USER.sessionToken, CURRENT_USER.ID)),
+        new Promise((resolve, reject) => google.script.run.withSuccessHandler(resolve).withFailureHandler(reject).setInfoPublique(params.infoPublique, CURRENT_USER.sessionToken, CURRENT_USER.ID)),
+        new Promise((resolve, reject) => google.script.run.withSuccessHandler(resolve).withFailureHandler(reject).setAPropos(params.apropos, CURRENT_USER.sessionToken, CURRENT_USER.ID)),
+        new Promise((resolve, reject) => google.script.run.withSuccessHandler(resolve).withFailureHandler(reject).setFaviconVitrine(params.favicon, CURRENT_USER.sessionToken, CURRENT_USER.ID)),
+        new Promise((resolve, reject) => google.script.run.withSuccessHandler(resolve).withFailureHandler(reject).setNomEntreprise(params.nomEntreprise, CURRENT_USER.sessionToken, CURRENT_USER.ID)),
+        new Promise((resolve, reject) => google.script.run.withSuccessHandler(resolve).withFailureHandler(reject).setSlogan(params.slogan, CURRENT_USER.sessionToken, CURRENT_USER.ID)),
+        new Promise((resolve, reject) => google.script.run.withSuccessHandler(resolve).withFailureHandler(reject).setDevise(params.devise, CURRENT_USER.sessionToken, CURRENT_USER.ID)),
+        new Promise((resolve, reject) => google.script.run.withSuccessHandler(resolve).withFailureHandler(reject).setThemeDefaut(params.themeDefaut, CURRENT_USER.sessionToken, CURRENT_USER.ID)),
+        new Promise((resolve, reject) => google.script.run.withSuccessHandler(resolve).withFailureHandler(reject).setAutoLoginActif(params.autoLogin, CURRENT_USER.sessionToken, CURRENT_USER.ID)),
+        new Promise((resolve, reject) => google.script.run.withSuccessHandler(resolve).withFailureHandler(reject).setMultiSuccursalesActif(multiSuccursales, CURRENT_USER.sessionToken, CURRENT_USER.ID))
       ]).then(function (resultats) {
         const echecs = resultats.filter(r => r.status === 'rejected');
         DATA.messageDuJour = params.messageJour; DATA.infoPublique = params.infoPublique; DATA.apropos = params.apropos; DATA.faviconVitrine = params.favicon; DATA.nomEntreprise = params.nomEntreprise; DATA.slogan = params.slogan;
@@ -8336,9 +8169,8 @@
         document.title = (params.nomEntreprise || "LEOPOLD'S LOUNGE BAR") + ' - Comptabilité';
         renderMessageDuJourBanniere();
         appliquerVisibiliteSuccursales();
-        document.getElementById('ms-general-pwd').value = '';
         if (echecs.length > 0) {
-          errEl.textContent = echecs.length + ' champ(s) n\'ont pas pu être enregistrés (mot de passe incorrect ?).';
+          errEl.textContent = echecs.length + ' champ(s) n\'ont pas pu être enregistrés.';
         } else {
           showToast('Paramètres généraux enregistrés.');
         }
@@ -8347,20 +8179,18 @@
     function enregistrerSecuriteAcces() {
       const accesRestreint = Array.from(document.querySelectorAll('.acces-restreint-check:checked')).map(el => el.value);
       const adminLectureSeule = Array.from(document.querySelectorAll('.admin-lecture-check:checked')).map(el => el.value);
-      const pwd = document.getElementById('ms-securite-pwd').value;
       const errEl = document.getElementById('ms-securite-err');
       errEl.textContent = '';
       Promise.allSettled([
-        new Promise((resolve, reject) => google.script.run.withSuccessHandler(resolve).withFailureHandler(reject).setRolesAccesRestreint(accesRestreint, pwd, CURRENT_USER.ID)),
-        new Promise((resolve, reject) => google.script.run.withSuccessHandler(resolve).withFailureHandler(reject).setRolesAdminLectureSeule(adminLectureSeule, pwd, CURRENT_USER.ID))
+        new Promise((resolve, reject) => google.script.run.withSuccessHandler(resolve).withFailureHandler(reject).setRolesAccesRestreint(accesRestreint, CURRENT_USER.sessionToken, CURRENT_USER.ID)),
+        new Promise((resolve, reject) => google.script.run.withSuccessHandler(resolve).withFailureHandler(reject).setRolesAdminLectureSeule(adminLectureSeule, CURRENT_USER.sessionToken, CURRENT_USER.ID))
       ]).then(function (resultats) {
         const echecs = resultats.filter(r => r.status === 'rejected');
         DATA.rolesAccesRestreint = accesRestreint;
         DATA.rolesAdminLectureSeule = adminLectureSeule;
-        document.getElementById('ms-securite-pwd').value = '';
         renderNav();
         if (echecs.length > 0) {
-          errEl.textContent = 'Certains réglages n\'ont pas pu être enregistrés (mot de passe incorrect ?).';
+          errEl.textContent = 'Certains réglages n\'ont pas pu être enregistrés.';
         } else {
           showToast('Sécurité & Accès enregistrés.');
         }
@@ -8403,7 +8233,6 @@
       const role = document.getElementById('perm-role-select').value;
       const onglets = Array.from(document.querySelectorAll('.perm-onglet-check:checked')).map(el => el.value);
       const sections = Array.from(document.querySelectorAll('.perm-section-check:checked')).map(el => el.value);
-      const pwd = document.getElementById('perm-role-pwd').value;
       const errEl = document.getElementById('perm-role-err');
       errEl.textContent = '';
       google.script.run.withSuccessHandler(function () {
@@ -8411,24 +8240,21 @@
         const idx = DATA.permissionsRoles.findIndex(p => p.role === role);
         const entry = { role: role, onglets: onglets, ongletsDefinis: true, sectionsDashboard: sections, sectionsDefinies: true };
         if (idx !== -1) DATA.permissionsRoles[idx] = entry; else DATA.permissionsRoles.push(entry);
-        document.getElementById('perm-role-pwd').value = '';
         renderNav();
         showToast('Permissions enregistrées pour ' + role + '.');
       }).withFailureHandler(function (err) { errEl.textContent = err.message || String(err); })
-        .setPermissionsRole(role, onglets, sections, pwd, CURRENT_USER.ID);
+        .setPermissionsRole(role, onglets, sections, CURRENT_USER.sessionToken, CURRENT_USER.ID);
     }
     function retirerPermissionsRoleSelectionne() {
       const role = document.getElementById('perm-role-select').value;
-      const pwd = document.getElementById('perm-role-pwd').value;
       const errEl = document.getElementById('perm-role-err');
       errEl.textContent = '';
       google.script.run.withSuccessHandler(function () {
         DATA.permissionsRoles = (DATA.permissionsRoles || []).filter(p => p.role !== role);
-        document.getElementById('perm-role-pwd').value = '';
         chargerPermissionsRoleSelectionne();
         renderNav();
         showToast('Revenu aux règles par défaut pour ' + role + '.');
-      }).withFailureHandler(function (err) { errEl.textContent = err.message || String(err); }).retirerPermissionsRole(role, pwd, CURRENT_USER.ID);
+      }).withFailureHandler(function (err) { errEl.textContent = err.message || String(err); }).retirerPermissionsRole(role, CURRENT_USER.sessionToken, CURRENT_USER.ID);
     }
 
     let RAPPORTS_SCOPE_ACTUEL = null;
