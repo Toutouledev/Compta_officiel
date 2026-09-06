@@ -2861,7 +2861,7 @@
   </script>
   <script>
 
-    const VERSION_CLIENT = 'build-2026-08-03-S';
+    const VERSION_CLIENT = 'build-2026-08-03-T';
 
     const APP_URL = (function () {
       const brut = '<?= appUrl ?>';
@@ -7000,7 +7000,7 @@
         renderSectionPatron();
         if (m) renderZoneVire(m);
         showToast('Employé viré.');
-      }).withFailureHandler(function (err) { errEl.textContent = err.message || String(err); }).virerEmploye(CURRENT_USER.ID, pwd, idAVirer, raison);
+      }).withFailureHandler(function (err) { errEl.textContent = err.message || String(err); }).virerEmploye(CURRENT_USER.sessionToken, pwd, idAVirer, raison);
     }
     function reintegrerEmployeUI() {
       const idAReintegrer = EDIT_EMPLOYE_ID;
