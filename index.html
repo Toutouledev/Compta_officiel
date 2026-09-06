@@ -9,7 +9,7 @@
   <meta name="apple-mobile-web-app-title" content="Leopold's">
   <meta name="theme-color" content="#0a0705">
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Playfair+Display:wght@600;700;800&family=VT323&family=Bebas+Neue&family=Manrope:wght@500;700;800&family=Cinzel:wght@500;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Playfair+Display:wght@600;700;800&family=VT323&family=Bebas+Neue&family=Manrope:wght@500;700;800&family=Cinzel:wght@500;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Press+Start+2P&display=swap" rel="stylesheet">
   <title>Leopold's Lounge Bar</title>
   <link id="favicon-lien" rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%230d0a06'/%3E%3Ctext x='32' y='45' font-family='Georgia,serif' font-size='36' font-weight='700' fill='%23c9a961' text-anchor='middle'%3EL%3C/text%3E%3C/svg%3E">
   <base target="_top">
@@ -114,61 +114,106 @@
       font-family: 'Bebas Neue', sans-serif; letter-spacing: 1px;
     }
     [data-theme="pixelar"] {
-      --bg: #000000; --bg-panel: #060706; --bg-card: #0b0d0b; --bg-card2: #111411;
-      --border: #1c241d; --border-soft: #141914;
-      --text: #f2f5f2; --text-mute: #9aa89e; --text-faint: #6e7d72;
-      --pink: #22c55e; --pink-deep: #15803d;
-      --gold: #f5c451; --cyan: #46dccb;
-      --green: #4ade80; --red: #ff5d6c;
+      --bg: #08060f; --bg-panel: #0f0b1c; --bg-card: #150f28; --bg-card2: #1d1536;
+      --border: #4a3a7a; --border-soft: #322559;
+      --text: #f0ecff; --text-mute: #a89bd6; --text-faint: #6f5fa3;
+      --pink: #ff2d95; --pink-deep: #c2005f;
+      --gold: #ffe14d; --cyan: #2de5ff;
+      --green: #39ff6a; --red: #ff3355;
       font-family: 'VT323', monospace;
       --anim-duree: .05s; --anim-easing: steps(2, jump-end);
     }
-    /* Toute l'app hérite de la police terminal, pas juste les titres - un thème rétro à moitié en
-       police normale casserait complètement l'effet "vieux jeu" recherché. */
+    /* Police terminal pour tout le texte courant - reste lisible malgré le côté rétro. */
     [data-theme="pixelar"] body, [data-theme="pixelar"] input, [data-theme="pixelar"] textarea,
-    [data-theme="pixelar"] select, [data-theme="pixelar"] button, [data-theme="pixelar"] table,
-    [data-theme="pixelar"] .card, [data-theme="pixelar"] .small, [data-theme="pixelar"] label {
-      font-family: 'VT323', monospace; letter-spacing: .3px;
+    [data-theme="pixelar"] select, [data-theme="pixelar"] table, [data-theme="pixelar"] .card,
+    [data-theme="pixelar"] .small, [data-theme="pixelar"] label {
+      font-family: 'VT323', monospace; letter-spacing: .3px; font-size: 1.1em;
     }
-    [data-theme="pixelar"] h2, [data-theme="pixelar"] h3, [data-theme="pixelar"] .brand {
-      font-family: 'VT323', monospace; font-size: 1.5em; letter-spacing: .5px;
-      text-shadow: 0 0 6px var(--pink), 0 0 14px rgba(34,197,94,.35);
+    /* Vraie police pixel-art (façon borne d'arcade) sur tout ce qui doit "taper à l'oeil" - titres,
+       navigation, boutons. Volontairement pas sur le corps de texte : illisible en dessous de 20px. */
+    [data-theme="pixelar"] h2, [data-theme="pixelar"] h3, [data-theme="pixelar"] .brand,
+    [data-theme="pixelar"] #nav-items button, [data-theme="pixelar"] .ms-sidebar-item,
+    [data-theme="pixelar"] button, [data-theme="pixelar"] .btn-primary, [data-theme="pixelar"] .btn-gold,
+    [data-theme="pixelar"] .btn-ghost, [data-theme="pixelar"] .btn-danger {
+      font-family: 'Press Start 2P', 'VT323', monospace; letter-spacing: 0; text-transform: uppercase;
     }
-    [data-theme="pixelar"] #nav-items button, [data-theme="pixelar"] .ms-sidebar-item {
-      font-family: 'VT323', monospace; font-size: 1.9em; letter-spacing: .5px;
-    }
+    [data-theme="pixelar"] h2, [data-theme="pixelar"] h3 { font-size: .85em; line-height: 1.6; }
+    [data-theme="pixelar"] .brand { font-size: .8em; }
+    [data-theme="pixelar"] #nav-items button, [data-theme="pixelar"] .ms-sidebar-item { font-size: .6em; line-height: 1.8; }
+    [data-theme="pixelar"] button, [data-theme="pixelar"] .btn-primary, [data-theme="pixelar"] .btn-gold,
+    [data-theme="pixelar"] .btn-ghost, [data-theme="pixelar"] .btn-danger { font-size: .62em; }
     [data-theme="pixelar"] .kpi-label, [data-theme="pixelar"] th, [data-theme="pixelar"] .filter-btn,
     [data-theme="pixelar"] .kpi-value, [data-theme="pixelar"] .settings-row-label {
-      font-family: 'VT323', monospace; font-size: 1.4em; letter-spacing: .5px;
+      font-family: 'VT323', monospace; font-size: 1.35em; letter-spacing: .5px;
     }
-    /* Coins carrés partout - un jeu rétro n'a jamais de bords arrondis, ça casse l'illusion pixel. */
+    /* Coins carrés partout, jamais de courbe dans un jeu 8-bit. */
     [data-theme="pixelar"] .card, [data-theme="pixelar"] button, [data-theme="pixelar"] input,
     [data-theme="pixelar"] textarea, [data-theme="pixelar"] select, [data-theme="pixelar"] .modal-card,
-    [data-theme="pixelar"] .btn-primary, [data-theme="pixelar"] .btn-ghost, [data-theme="pixelar"] .btn-gold,
     [data-theme="pixelar"] .pill, [data-theme="pixelar"] .toast, [data-theme="pixelar"] .notif-carte {
       border-radius: 0 !important;
     }
-    /* Bordures épaisses et vertes façon écran phosphore, contour net sans dégradé ni ombre douce. */
+    /* Cadres épais façon fenêtre de jeu rétro, avec une "ombre dure" décalée (pas de flou) - LA
+       signature visuelle des interfaces 8-bit, contrairement à toutes les ombres douces du reste de l'app. */
     [data-theme="pixelar"] .card {
-      border: 2px solid var(--border); box-shadow: none;
+      border: 3px solid var(--border); box-shadow: 5px 5px 0 0 var(--bg-card2);
     }
-    [data-theme="pixelar"] .btn-primary {
-      border: 2px solid var(--pink); box-shadow: 0 0 8px rgba(34,197,94,.5); text-shadow: none;
+    [data-theme="pixelar"] button, [data-theme="pixelar"] .btn-primary, [data-theme="pixelar"] .btn-gold,
+    [data-theme="pixelar"] .btn-ghost {
+      border: 3px solid var(--text); box-shadow: 4px 4px 0 0 rgba(0,0,0,.6); transition: none;
     }
-    /* Lueur verte façon phosphore sur le texte accentué, discrète pour rester lisible. */
+    [data-theme="pixelar"] button:active, [data-theme="pixelar"] .btn-primary:active,
+    [data-theme="pixelar"] .btn-gold:active, [data-theme="pixelar"] .btn-ghost:active {
+      transform: translate(4px, 4px); box-shadow: none;
+    }
+    [data-theme="pixelar"] .btn-primary { background: var(--pink); border-color: #ffb3dc; color: #1a0410; }
+    [data-theme="pixelar"] .btn-danger { border: 3px solid #ffb3bf; box-shadow: 4px 4px 0 0 rgba(0,0,0,.6); }
+    /* Lueur néon façon enseigne d'arcade sur les accents et liens. */
     [data-theme="pixelar"] .kpi-gold, [data-theme="pixelar"] a.linklike {
-      text-shadow: 0 0 4px currentColor;
+      text-shadow: 0 0 4px currentColor, 0 0 10px currentColor;
     }
-    /* Curseur clignotant façon invite de commande, purement décoratif, posé après le logo. */
+    /* Curseur clignotant façon écran titre "PRESS START", posé après le logo. */
     [data-theme="pixelar"] .brand::after {
-      content: '_'; margin-left: 4px; color: var(--pink); animation: pixelar-clignote 1s steps(1) infinite;
+      content: '_'; margin-left: 6px; color: var(--cyan); animation: pixelar-clignote .8s steps(1) infinite;
     }
     @keyframes pixelar-clignote { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }
-    /* Lignes de balayage CRT très subtiles par-dessus tout, sans gêner la lecture. */
+    /* Lignes de balayage CRT + léger scintillement, façon vieil écran cathodique. */
     [data-theme="pixelar"]::before {
       content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 9999;
-      background: repeating-linear-gradient(0deg, rgba(0,0,0,.15) 0px, rgba(0,0,0,.15) 1px, transparent 1px, transparent 3px);
-      mix-blend-mode: multiply; opacity: .5;
+      background: repeating-linear-gradient(0deg, rgba(0,0,0,.18) 0px, rgba(0,0,0,.18) 1px, transparent 1px, transparent 3px);
+      mix-blend-mode: multiply; opacity: .55;
+    }
+
+    [data-theme="toutoule"] {
+      --bg: #05030a; --bg-panel: #0a0614; --bg-card: #120a1f; --bg-card2: #1a1030;
+      --border: #3d2a66; --border-soft: #291c4a;
+      --text: #ece6ff; --text-mute: #b0a0e0; --text-faint: #7566a3;
+      --pink: #8b5cf6; --pink-deep: #6d28d9;
+      --gold: #a78bfa; --cyan: #7dd3fc;
+      --green: #22ff6e; --red: #ff2d4d;
+    }
+    /* Aucun jaune nulle part : le doré générique de l'app est remplacé par le même violet que
+       l'accent principal, plutôt que de laisser le jaune par défaut passer à travers. */
+    [data-theme="toutoule"] .btn-gold { background: var(--pink); color: #fff; }
+    [data-theme="toutoule"] .kpi-gold { color: var(--pink); }
+    /* Boutons contrastés qui "ressortent" bien du fond sombre : bordure claire + lueur, pas juste
+       un simple fond plat comme les autres thèmes. */
+    [data-theme="toutoule"] button, [data-theme="toutoule"] .btn-primary, [data-theme="toutoule"] .btn-gold,
+    [data-theme="toutoule"] .btn-ghost {
+      border: 1.5px solid rgba(236,230,255,.25); box-shadow: 0 2px 12px rgba(139,92,246,.35);
+    }
+    /* Validation = vert partout, sans exception - le bouton principal de l'app (Enregistrer,
+       Ajouter, Valider...) devient vert plutôt que la couleur d'accent du thème. */
+    [data-theme="toutoule"] .btn-primary {
+      background: linear-gradient(90deg, var(--green), #16c94f); color: #04170a; border-color: rgba(34,255,110,.4);
+      box-shadow: 0 2px 14px rgba(34,255,110,.4);
+    }
+    /* Suppression = rouge partout - géré en JS (marquerActionsDangereusesToutoule_) pour les liens
+       "Supprimer/Retirer/Vider..." qui n'ont pas de classe dédiée, voir plus bas dans le script. */
+    [data-theme="toutoule"] a.linklike.linklike-danger {
+      color: var(--red); border-color: rgba(255,45,77,.4); background: rgba(255,45,77,.08);
+    }
+    [data-theme="toutoule"] .btn-danger {
+      background: var(--red); box-shadow: 0 2px 14px rgba(255,45,77,.45);
     }
 
     [data-theme="leopolds"] {
@@ -2071,6 +2116,7 @@
               <select id="master-theme-defaut" style="width:auto;">
                 <option value="leopolds">Leopold's</option>
                 <option value="pixelar">Pixelar</option>
+                <option value="toutoule">Toutoule</option>
                 <option value="sandystrip">Sandy Strip</option>
                 <option value="clair">Clair</option>
               </select>
@@ -2861,7 +2907,7 @@
   </script>
   <script>
 
-    const VERSION_CLIENT = 'build-2026-08-03-T';
+    const VERSION_CLIENT = 'build-2026-08-03-U';
 
     const APP_URL = (function () {
       const brut = '<?= appUrl ?>';
@@ -2927,7 +2973,7 @@
         'dashboard.hideLeaderboard': 'Masquer le classement', 'dashboard.showLeaderboard': 'Afficher le classement',
         'settings.menuPosition': 'Position du menu', 'settings.theme': 'Thème', 'settings.language': 'Langue',
         'settings.left': 'Gauche', 'settings.right': 'Droite',
-        'theme.leopolds': "Leopold's", 'theme.clair': 'Clair', 'theme.sandystrip': 'Sandy Strip', 'theme.pixelar': 'Pixelar',
+        'theme.leopolds': "Leopold's", 'theme.clair': 'Clair', 'theme.sandystrip': 'Sandy Strip', 'theme.pixelar': 'Pixelar', 'theme.toutoule': 'Toutoule',
         'lang.fr': 'Français', 'lang.en': 'English', 'lang.es': 'Español', 'lang.it': 'Italiano',
         'login.identifiant': 'Identifiant', 'login.password': 'Mot de passe',
         'login.remember': 'Enregistrer mon identifiant', 'login.enter': 'Entrer'
@@ -2942,7 +2988,7 @@
         'dashboard.hideLeaderboard': 'Hide leaderboard', 'dashboard.showLeaderboard': 'Show leaderboard',
         'settings.menuPosition': 'Menu position', 'settings.theme': 'Theme', 'settings.language': 'Language',
         'settings.left': 'Left', 'settings.right': 'Right',
-        'theme.leopolds': "Leopold's", 'theme.clair': 'Light', 'theme.sandystrip': 'Sandy Strip', 'theme.pixelar': 'Pixelar',
+        'theme.leopolds': "Leopold's", 'theme.clair': 'Light', 'theme.sandystrip': 'Sandy Strip', 'theme.pixelar': 'Pixelar', 'theme.toutoule': 'Toutoule',
         'lang.fr': 'Français', 'lang.en': 'English', 'lang.es': 'Español', 'lang.it': 'Italiano',
         'login.identifiant': 'Username', 'login.password': 'Password',
         'login.remember': 'Remember my username', 'login.enter': 'Enter'
@@ -2957,7 +3003,7 @@
         'dashboard.hideLeaderboard': 'Ocultar clasificación', 'dashboard.showLeaderboard': 'Mostrar clasificación',
         'settings.menuPosition': 'Posición del menú', 'settings.theme': 'Tema', 'settings.language': 'Idioma',
         'settings.left': 'Izquierda', 'settings.right': 'Derecha',
-        'theme.leopolds': "Leopold's", 'theme.clair': 'Claro', 'theme.sandystrip': 'Sandy Strip', 'theme.pixelar': 'Pixelar',
+        'theme.leopolds': "Leopold's", 'theme.clair': 'Claro', 'theme.sandystrip': 'Sandy Strip', 'theme.pixelar': 'Pixelar', 'theme.toutoule': 'Toutoule',
         'lang.fr': 'Français', 'lang.en': 'English', 'lang.es': 'Español', 'lang.it': 'Italiano',
         'login.identifiant': 'Usuario', 'login.password': 'Contraseña',
         'login.remember': 'Recordar mi usuario', 'login.enter': 'Entrar'
@@ -2972,7 +3018,7 @@
         'dashboard.hideLeaderboard': 'Nascondi classifica', 'dashboard.showLeaderboard': 'Mostra classifica',
         'settings.menuPosition': 'Posizione del menu', 'settings.theme': 'Tema', 'settings.language': 'Lingua',
         'settings.left': 'Sinistra', 'settings.right': 'Destra',
-        'theme.leopolds': "Leopold's", 'theme.clair': 'Chiaro', 'theme.sandystrip': 'Sandy Strip', 'theme.pixelar': 'Pixelar',
+        'theme.leopolds': "Leopold's", 'theme.clair': 'Chiaro', 'theme.sandystrip': 'Sandy Strip', 'theme.pixelar': 'Pixelar', 'theme.toutoule': 'Toutoule',
         'lang.fr': 'Français', 'lang.en': 'English', 'lang.es': 'Español', 'lang.it': 'Italiano',
         'login.identifiant': 'Nome utente', 'login.password': 'Password',
         'login.remember': 'Ricorda il mio nome utente', 'login.enter': 'Entra'
@@ -2995,18 +3041,40 @@
       renderParametresLangueBoutons();
     }
 
-    const THEMES = [['leopolds', 'theme.leopolds'], ['pixelar', 'theme.pixelar'], ['sandystrip', 'theme.sandystrip'], ['clair', 'theme.clair']];
+    const THEMES = [['leopolds', 'theme.leopolds'], ['pixelar', 'theme.pixelar'], ['sandystrip', 'theme.sandystrip'], ['clair', 'theme.clair'], ['toutoule', 'theme.toutoule']];
     
     const THEMES_APERCU = {
       leopolds: { bg: '#000000', accent: '#e8b923', gold: '#ffcf40', police: "'Playfair Display', Georgia, serif", desc: 'Cabaret noir et or' },
-      pixelar: { bg: '#000000', accent: '#22c55e', gold: '#f5c451', police: "'VT323', monospace", desc: 'Rétro terminal, néon' },
+      pixelar: { bg: '#08060f', accent: '#ff2d95', gold: '#2de5ff', police: "'Press Start 2P', 'VT323', monospace", desc: 'Borne d\'arcade 8-bit' },
       sandystrip: { bg: '#17040e', accent: '#ff2d78', gold: '#ffcf4d', police: "'Bebas Neue', sans-serif", desc: 'Néon, club énergique' },
-      clair: { bg: '#f4f2f7', accent: '#e01d78', gold: '#b8790c', police: "'Manrope', sans-serif", desc: 'Sobre, lumineux' }
+      clair: { bg: '#f4f2f7', accent: '#e01d78', gold: '#b8790c', police: "'Manrope', sans-serif", desc: 'Sobre, lumineux' },
+      toutoule: { bg: '#0a0614', accent: '#8b5cf6', gold: '#8b5cf6', police: "'Manrope', sans-serif", desc: 'Midnight purple, contrasté' }
     };
     function appliquerTheme(theme) {
       document.documentElement.setAttribute('data-theme', theme);
       setPref_('sandystrip_theme', theme);
       renderParametresThemeBoutons();
+      demarrerRepereActionsDangereusesToutoule_();
+    }
+    // CSS ne peut pas cibler du texte ("Supprimer", "Retirer"...) - pour le thème Toutoule qui
+    // demande explicitement du rouge sur les actions destructrices, on marque ces liens en JS
+    // plutôt que de devoir ajouter une classe dédiée à chaque endroit de l'app qui en crée un.
+    let TIMER_REPERE_DANGER_TOUTOULE = null;
+    function marquerActionsDangereusesToutoule_() {
+      if (document.documentElement.getAttribute('data-theme') !== 'toutoule') return;
+      document.querySelectorAll('a.linklike:not(.linklike-marque)').forEach(function (a) {
+        a.classList.add('linklike-marque');
+        const texte = a.textContent.trim().toLowerCase();
+        if (/supprim|retir|vider|vir(e|é)|effac|annuler la demande|r[ée]sili/.test(texte)) {
+          a.classList.add('linklike-danger');
+        }
+      });
+    }
+    function demarrerRepereActionsDangereusesToutoule_() {
+      clearInterval(TIMER_REPERE_DANGER_TOUTOULE);
+      if (document.documentElement.getAttribute('data-theme') !== 'toutoule') return;
+      marquerActionsDangereusesToutoule_();
+      TIMER_REPERE_DANGER_TOUTOULE = setInterval(marquerActionsDangereusesToutoule_, 800);
     }
     function renderParametresThemeBoutons() {
       const el = document.getElementById('profil-theme-cartes');
@@ -3503,6 +3571,7 @@
       let pref = null;
       try { pref = localStorage.getItem('sandystrip_theme'); } catch (e) {  }
       document.documentElement.setAttribute('data-theme', pref || (DATA && DATA.themeParDefaut) || 'leopolds');
+      demarrerRepereActionsDangereusesToutoule_();
     }
 
     function calculerStatutOuvertureVitrine_(horaires) {
