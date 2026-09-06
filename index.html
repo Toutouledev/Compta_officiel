@@ -2936,7 +2936,7 @@
   <script>
     // Doit toujours correspondre exactement au repère affiché dans l'en-tête ci-dessus,
     // et à VERSION_ACTUELLE dans Code.gs - sert à détecter une nouvelle version déployée.
-    const VERSION_CLIENT = 'build-2026-08-03-I';
+    const VERSION_CLIENT = 'build-2026-08-03-J';
     // Transmise par le serveur (doGet) via ScriptApp.getService().getUrl() - pas besoin de la lire
     // depuis la fenêtre du haut, ce qui est bloqué entre domaines différents.
     const APP_URL = (function () {
@@ -3200,7 +3200,7 @@
         sauvegarderSessionAutoLogin(CURRENT_USER.Identifiant, nouveauMdp);
         showToast('Mot de passe mis à jour.');
       }).withFailureHandler(function (err) { errEl.textContent = err.message || String(err); })
-        .updateIdentifiants(CURRENT_USER.ID, '', nouveauMdp, CURRENT_USER.ID);
+        .updateIdentifiants(CURRENT_USER.ID, '', nouveauMdp, CURRENT_USER.sessionToken);
     }
     // Chaque thème a sa propre "couleur sonore" - même mécanisme (Web Audio, pas de fichier à
     // charger), juste des paramètres différents selon l'ambiance : chaud et posé pour Leopold's,
@@ -3826,7 +3826,7 @@
       google.script.run.withSuccessHandler(function (statut) {
         DATA.statutReservation = statut;
         renderStatutReservation_();
-      }).withFailureHandler(function () {}).getStatutReservationClient(CURRENT_USER.ID);
+      }).withFailureHandler(function () {}).getStatutReservationClient(CURRENT_USER.sessionToken);
     }
     function renderStatutReservation_() {
       const estConnecte = !!CURRENT_USER;
@@ -3953,7 +3953,7 @@
       google.script.run.withSuccessHandler(function () {
         CURRENT_USER.Téléphone = telephone;
         showToast('Téléphone mis à jour.');
-      }).withFailureHandler(function (err) { errEl.textContent = err.message || String(err); }).setTelephoneClient(CURRENT_USER.ID, telephone, CURRENT_USER.ID);
+      }).withFailureHandler(function (err) { errEl.textContent = err.message || String(err); }).setTelephoneClient(CURRENT_USER.ID, telephone, CURRENT_USER.sessionToken);
     }
     function basculerInscriptionClient() {
       document.getElementById('login-normal').classList.toggle('hidden');
@@ -4047,7 +4047,7 @@
         showToast('Demande envoyée - on te confirme par téléphone !');
         if (clientId) chargerStatutReservationClient_();
       }).withFailureHandler(function (err) { RESA_EN_COURS = false; errEl.textContent = err.message || String(err); })
-        .ajouterReservation(nom, telephone, date, heure, nb, commentaire, clientId);
+        .ajouterReservation(nom, telephone, date, heure, nb, commentaire, CURRENT_USER.sessionToken);
     }
     function envoyerModifReservationUI_() {
       if (RESA_EN_COURS) return;
@@ -4067,7 +4067,7 @@
         chargerStatutReservationClient_();
         showToast('Demande modifiée - repassée en attente de réponse.');
       }).withFailureHandler(function (err) { RESA_EN_COURS = false; errEl.textContent = err.message || String(err); })
-        .modifierMaReservation(id, CURRENT_USER.ID, date, heure, nb, commentaire);
+        .modifierMaReservation(id, CURRENT_USER.sessionToken, date, heure, nb, commentaire);
     }
     function afficherEcranLoginNormal() {
       masquerChargement();
@@ -4382,7 +4382,7 @@
     }
     function definirVitrineAfficherPrix(actif) {
       DATA.vitrineAfficherPrix = actif;
-      google.script.run.withFailureHandler(onError).setVitrineAfficherPrix(actif, CURRENT_USER.ID);
+      google.script.run.withFailureHandler(onError).setVitrineAfficherPrix(actif, CURRENT_USER.sessionToken);
       showToast(actif ? 'Prix affichés sur la vitrine.' : 'Prix masqués sur la vitrine.');
     }
     // Rend "réordonnable au glisser" les éléments correspondant à itemSelector (chacun doit porter
@@ -4514,11 +4514,15 @@
       if (!identifiant) { errEl.textContent = 'Choisis un identifiant.'; return; }
       afficherChargement('Création du compte...');
       google.script.run.withSuccessHandler(function (m) {
-        const employe = { ID: m.id, 'Nom RP': nom, Identifiant: identifiant, 'Rôle': 'Propriétaire', Permission: 'Direction', Succursale: '', 'Commission %': 0, 'Paie fixe ($)': 0, 'Salaire souhaité ($)': 0, Notes: '', DateAjout: new Date(), MasterSettings: true };
-        DATA.employes.push(employe);
-        CURRENT_USER = employe;
-        sauvegarderSessionAutoLogin(identifiant, pwd);
-        enterApp();
+        // Un simple objet construit à la main n'a pas de jeton de session valide - on relance une
+        // vraie connexion avec les identifiants qu'on vient de créer pour en obtenir un.
+        google.script.run.withSuccessHandler(function (compteAvecToken) {
+          DATA.employes.push(compteAvecToken);
+          CURRENT_USER = compteAvecToken;
+          sauvegarderSessionAutoLogin(identifiant, pwd);
+          enterApp();
+        }).withFailureHandler(function (err) { masquerChargement(); errEl.textContent = err.message || String(err); })
+          .loginAvecIdentifiant(identifiant, pwd);
       }).withFailureHandler(function (err) { masquerChargement(); errEl.textContent = err.message || String(err); }).addEmploye('', pwd, nom, identifiant, 'Propriétaire', 'Direction', '', 0, 0, 0, pwd, '');
     }
 
@@ -4593,7 +4597,7 @@
       google.script.run.withSuccessHandler(function (texte) {
         champPetit.value = texte || '';
         document.getElementById('blocnotes-texte-agrandi').value = texte || '';
-      }).withFailureHandler(function () {}).getBlocNotesPerso(CURRENT_USER.ID, CURRENT_USER.ID);
+      }).withFailureHandler(function () {}).getBlocNotesPerso(CURRENT_USER.ID, CURRENT_USER.sessionToken);
     }
     // Les deux champs (petit et agrandi) restent synchronisés en direct à chaque frappe, peu
     // importe lequel est actif - comme ça, fermer la vue agrandie n'importe comment (Échap compris,
@@ -4621,7 +4625,7 @@
           const msg = 'Échec : ' + (err && (err.message || err) || 'erreur inconnue');
           document.getElementById('blocnotes-statut').textContent = msg;
           document.getElementById('blocnotes-statut-agrandi').textContent = msg;
-        }).setBlocNotesPerso(CURRENT_USER.ID, texte, CURRENT_USER.ID);
+        }).setBlocNotesPerso(CURRENT_USER.ID, texte, CURRENT_USER.sessionToken);
       }, 900); // laisse la personne finir sa phrase avant d'enregistrer, pas à chaque lettre
     }
     // Agrandir : même taille que Mon Profil, ouverte comme une vraie page par-dessus le Tableau de
@@ -4888,7 +4892,7 @@
       previsualiserPersonnalisation();
       google.script.run.withSuccessHandler(function () {
         showToast('Personnalisation enregistrée.');
-      }).withFailureHandler(onError).updateProfilPerso(CURRENT_USER.ID, '', couleur, statut, bio, CURRENT_USER.ID);
+      }).withFailureHandler(onError).updateProfilPerso(CURRENT_USER.ID, '', couleur, statut, bio, CURRENT_USER.sessionToken);
     }
     function switchProfilSection(section, btnEl) {
       if (!antispamNavigation_()) return;
@@ -5385,7 +5389,7 @@
         renderDashboard();
         fermerLeaderboardConfig();
         showToast('Classement mis à jour.');
-      }).withFailureHandler(function (err) { errEl.textContent = err.message || String(err); }).setLeaderboardRoles(liste, CURRENT_USER.ID);
+      }).withFailureHandler(function (err) { errEl.textContent = err.message || String(err); }).setLeaderboardRoles(liste, CURRENT_USER.sessionToken);
     }
 
     function recomputeLeaderboardLocally() {
@@ -5802,7 +5806,7 @@
         renderAbsencesTable();
         try { renderGestionRapide(); } catch (e) {}
         showToast(statut === 'Approuvé' ? 'Demande approuvée.' : 'Demande rejetée.');
-      }).withFailureHandler(onError).traiterAbsence(id, statut, CURRENT_USER.ID, CURRENT_USER['Nom RP']);
+      }).withFailureHandler(onError).traiterAbsence(id, statut, CURRENT_USER.sessionToken, CURRENT_USER['Nom RP']);
     }
     function renderListeItemsExportAdmin() {
       const el = document.getElementById('liste-items-export-admin');
@@ -5820,7 +5824,7 @@
         document.getElementById('new-item-export').value = '';
         renderListeItemsExportAdmin();
         showToast('Item ajouté.');
-      }).withFailureHandler(onError).addArticleExport(nom, CURRENT_USER.ID);
+      }).withFailureHandler(onError).addArticleExport(nom, CURRENT_USER.sessionToken);
     }
     function supprimerItemExport(id) {
       if (!confirm('Supprimer cet item d\'export ?')) return;
@@ -5828,7 +5832,7 @@
         DATA.articlesExport = (DATA.articlesExport || []).filter(a => a.ID !== id);
         renderListeItemsExportAdmin();
         showToast('Item supprimé.');
-      }).withFailureHandler(onError).deleteArticleExport(id, CURRENT_USER.ID);
+      }).withFailureHandler(onError).deleteArticleExport(id, CURRENT_USER.sessionToken);
     }
     // Calcule automatiquement, pour le prix unitaire saisi, la quantité de chiffres ronds
     // qui se rapproche le plus du plafond SANS jamais le dépasser.
@@ -6201,7 +6205,7 @@
         google.script.run.withSuccessHandler(function () {
           chargerComptesClients();
           showToast('Compte client supprimé.');
-        }).withFailureHandler(onError).supprimerCompteClient(clientId, CURRENT_USER.ID, CURRENT_USER['Nom RP']);
+        }).withFailureHandler(onError).supprimerCompteClient(clientId, CURRENT_USER.sessionToken, CURRENT_USER['Nom RP']);
       }, true);
     }
 
@@ -6242,7 +6246,7 @@
         DATA.vipMembres = (DATA.vipMembres || []).filter(x => x.ID !== id);
         renderVipMembres();
         showToast('Membre retiré.');
-      }).withFailureHandler(onError).deleteVipMembre(id, CURRENT_USER.ID);
+      }).withFailureHandler(onError).deleteVipMembre(id, CURRENT_USER.sessionToken);
     }
     function renderVipOffresListe() {
       const offres = DATA.vipOffres || [];
@@ -6404,7 +6408,7 @@
         document.getElementById('paie-subvention').checked = false;
         renderPaieTable();
         showToast('Versement enregistré.' + (parSubvention ? ' (payé par subvention, non compté dans Paie générale)' : ''));
-      }).withFailureHandler(onError).addPaie(employeId, employeNom, montant, CURRENT_USER['Nom RP'], comment, parSubvention, CURRENT_USER.ID);
+      }).withFailureHandler(onError).addPaie(employeId, employeNom, montant, CURRENT_USER['Nom RP'], comment, parSubvention, CURRENT_USER.sessionToken);
     }
     function renderPaieTable() {
       renderScopeHistorique('paie-historique-scope', PAIE_SCOPE_HISTORIQUE);
@@ -6807,7 +6811,7 @@
         showToast(nom + ' a été suspendu.');
         fermerFicheSuspension();
       }).withFailureHandler(function (err) { errEl.textContent = err.message || String(err); })
-        .suspendreCompte(FICHE_SUSPENSION_ID, true, CURRENT_USER.ID, CURRENT_USER['Nom RP'], raison, duree);
+        .suspendreCompte(FICHE_SUSPENSION_ID, true, CURRENT_USER.sessionToken, CURRENT_USER['Nom RP'], raison, duree);
     }
     function confirmerFicheReactiver() {
       if (!FICHE_SUSPENSION_ID) return;
@@ -6823,7 +6827,7 @@
         showToast('Suspension levée pour ' + nom + '.');
         fermerFicheSuspension();
       }).withFailureHandler(function (err) { errEl.textContent = err.message || String(err); })
-        .suspendreCompte(FICHE_SUSPENSION_ID, false, CURRENT_USER.ID, CURRENT_USER['Nom RP']);
+        .suspendreCompte(FICHE_SUSPENSION_ID, false, CURRENT_USER.sessionToken, CURRENT_USER['Nom RP']);
     }
     let MUTE_CIBLE_ID = null;
     /* ===================== Confirmation avant action (vente, dépense...) - réglage GLOBAL ===================== */
@@ -6844,7 +6848,7 @@
     function definirConfirmationsActives(actif) {
       DATA.confirmationsActives = actif;
       renderToggleConfirmations();
-      google.script.run.withFailureHandler(onError).setConfirmationsActives(actif, CURRENT_USER.ID);
+      google.script.run.withFailureHandler(onError).setConfirmationsActives(actif, CURRENT_USER.sessionToken);
     }
     function renderToggleConfirmations() {
       const el = document.getElementById('pref-confirmations-actives');
@@ -6931,7 +6935,7 @@
         ouvrirConversationSurveillee(id1, id2, nom1, nom2);
         showToast('Message supprimé.');
         google.script.run.withFailureHandler(function () {}).logActivite(CURRENT_USER.ID, CURRENT_USER['Nom RP'], 'Modération', 'Message privé supprimé (' + nom1 + ' ↔ ' + nom2 + ')');
-      }).withFailureHandler(onError).supprimerMessagePrive(id);
+      }).withFailureHandler(onError).supprimerMessagePrive(id, CURRENT_USER.sessionToken);
     }
 
     function renderSectionPatron() {
@@ -7161,7 +7165,7 @@
         m['Commission %'] = commission; m['Paie fixe ($)'] = salaire;
         suiteApresMajPrincipale();
       }).withFailureHandler(function (err) { errEl.textContent = err.message || String(err); })
-        .updateEmploye(idEnCours, role, permission, succursale, commission, salaire, m['Salaire souhaité ($)'] || 0, roleSecondaire, CURRENT_USER.ID);
+        .updateEmploye(idEnCours, role, permission, succursale, commission, salaire, m['Salaire souhaité ($)'] || 0, roleSecondaire, CURRENT_USER.sessionToken);
 
       function suiteApresMajPrincipale() {
         const identifiantChange = identifiant !== (m.Identifiant || '');
@@ -7170,7 +7174,7 @@
             m.Identifiant = identifiant;
             suiteApresIdentifiants();
           }).withFailureHandler(function (err) { errEl.textContent = err.message || String(err); })
-            .updateIdentifiants(idEnCours, identifiant, motDePasse, CURRENT_USER.ID);
+            .updateIdentifiants(idEnCours, identifiant, motDePasse, CURRENT_USER.sessionToken);
         } else {
           suiteApresIdentifiants();
         }
@@ -7242,7 +7246,7 @@
         if (m) renderZoneVire(m);
         showToast('Employé réintégré.');
       }).withFailureHandler(function (err) { errEl.textContent = err.message || String(err); })
-        .reintegrerEmploye(idAReintegrer, CURRENT_USER.ID, CURRENT_USER['Nom RP']);
+        .reintegrerEmploye(idAReintegrer, CURRENT_USER.sessionToken, CURRENT_USER['Nom RP']);
     }
 
 
@@ -7263,7 +7267,7 @@
         document.getElementById('new-role-nom').value = '';
         renderRolesList();
         showToast('Rôle ajouté.');
-      }).withFailureHandler(onError).addRole(nom, CURRENT_USER.ID);
+      }).withFailureHandler(onError).addRole(nom, CURRENT_USER.sessionToken);
     }
     function supprimerRole(encoded) {
       const nom = decodeURIComponent(encoded);
@@ -7272,7 +7276,7 @@
         DATA.roles = DATA.roles.filter(r => r !== nom);
         renderRolesList();
         showToast('Rôle supprimé.');
-      }).withFailureHandler(onError).deleteRole(nom, CURRENT_USER.ID);
+      }).withFailureHandler(onError).deleteRole(nom, CURRENT_USER.sessionToken);
     }
 
     /* ===================== Succursales ===================== */
@@ -7294,7 +7298,7 @@
         document.getElementById('new-succ-nom').value = '';
         renderSuccursalesList();
         showToast('Succursale créée.');
-      }).withFailureHandler(onError).addSuccursale(nom, roleLie, CURRENT_USER.ID);
+      }).withFailureHandler(onError).addSuccursale(nom, roleLie, CURRENT_USER.sessionToken);
     }
     function supprimerSuccursale(id) {
       if (!confirm('Supprimer cette succursale ?')) return;
@@ -7302,7 +7306,7 @@
         DATA.succursales = DATA.succursales.filter(s => s.ID !== id);
         renderSuccursalesList();
         showToast('Succursale supprimée.');
-      }).withFailureHandler(onError).deleteSuccursale(id, CURRENT_USER.ID);
+      }).withFailureHandler(onError).deleteSuccursale(id, CURRENT_USER.sessionToken);
     }
 
     /* ===================== Articles admin ===================== */
@@ -7413,7 +7417,7 @@
         chargerStock();
         showToast('Stock ajusté.');
       }).withFailureHandler(function (err) { errEl.textContent = err.message || String(err); })
-        .ajusterStock(AJUSTER_STOCK_CIBLE.articleId, AJUSTER_STOCK_CIBLE.succursale, delta, commentaire, CURRENT_USER.ID, CURRENT_USER['Nom RP']);
+        .ajusterStock(AJUSTER_STOCK_CIBLE.articleId, AJUSTER_STOCK_CIBLE.succursale, delta, commentaire, CURRENT_USER.sessionToken, CURRENT_USER['Nom RP']);
     }
 
     function ajouterArticle() {
@@ -7431,7 +7435,7 @@
         // Place le nouvel article à la fin de l'ordre d'affichage (sinon il apparaîtrait tout en haut).
         google.script.run.withFailureHandler(function () {}).reordonnerArticles(DATA.articles.map(a => a.ID));
         showToast('Article ajouté.');
-      }).withFailureHandler(onError).addArticle(nom, prixAchat, prixVente, 0, 0, cat, notes, succursale, CURRENT_USER.ID);
+      }).withFailureHandler(onError).addArticle(nom, prixAchat, prixVente, 0, 0, cat, notes, succursale, CURRENT_USER.sessionToken);
     }
 
     let EDIT_ARTICLE_ID = null;
@@ -7472,7 +7476,7 @@
         fermerModifArticle();
         showToast('Article modifié.');
       }).withFailureHandler(function (err) { errEl.textContent = err.message || String(err); })
-        .updateArticle(EDIT_ARTICLE_ID, nom, prixAchat, prixVente, 0, 0, cat, notes, false, 0, succursale, CURRENT_USER.ID);
+        .updateArticle(EDIT_ARTICLE_ID, nom, prixAchat, prixVente, 0, 0, cat, notes, false, 0, succursale, CURRENT_USER.sessionToken);
     }
 
     function demarrerSuppressionArticle() {
@@ -7492,7 +7496,7 @@
         renderArticlesAdmin(); renderCatalogueCaisse(); populateArticleSelect('ach-article');
         fermerModifArticle();
         showToast('Article supprimé.');
-      }).withFailureHandler(function (err) { document.getElementById('art-edit-err').textContent = err.message || String(err); }).deleteArticle(id, CURRENT_USER.ID);
+      }).withFailureHandler(function (err) { document.getElementById('art-edit-err').textContent = err.message || String(err); }).deleteArticle(id, CURRENT_USER.sessionToken);
     }
 
     /* ===================== Objectifs ===================== */
@@ -7517,7 +7521,7 @@
         document.getElementById('obj-intitule').value = ''; document.getElementById('obj-montant').value = '';
         renderObjectifs();
         showToast('Objectif créé.');
-      }).withFailureHandler(onError).addObjectif(intitule, cible, employeId, employeNom, montant, periodeJours, dateDebut, comment, CURRENT_USER.ID);
+      }).withFailureHandler(onError).addObjectif(intitule, cible, employeId, employeNom, montant, periodeJours, dateDebut, comment, CURRENT_USER.sessionToken);
     }
 
     function renderObjectifs() {
@@ -7539,7 +7543,7 @@
       google.script.run.withSuccessHandler(function () {
         DATA.objectifs = DATA.objectifs.filter(x => x.ID !== id);
         renderObjectifs(); showToast('Objectif supprimé.');
-      }).withFailureHandler(onError).deleteObjectif(id, CURRENT_USER.ID);
+      }).withFailureHandler(onError).deleteObjectif(id, CURRENT_USER.sessionToken);
     }
 
     /* ===================== Agenda ===================== */
@@ -7649,7 +7653,7 @@
         DATA.chat = (DATA.chat || []).filter(m => m.ID !== id);
         renderChat();
         showToast('Message supprimé.');
-      }).withFailureHandler(onError).supprimerMessageChat(id, CURRENT_USER.ID);
+      }).withFailureHandler(onError).supprimerMessageChat(id, CURRENT_USER.sessionToken);
     }
     function autoGrowChat(el) {
       el.style.height = 'auto';
@@ -7768,7 +7772,7 @@
         DATA.mpActuel = (DATA.mpActuel || []).filter(m => m.ID !== id);
         renderMessagesPrives();
         showToast('Message supprimé.');
-      }).withFailureHandler(onError).supprimerMessagePrive(id);
+      }).withFailureHandler(onError).supprimerMessagePrive(id, CURRENT_USER.sessionToken);
     }
     function envoyerMessagePriveUI() {
       if (!MP_CONTACT_ACTUEL) { showToast('Choisis d\'abord une personne.', true); return; }
@@ -8156,7 +8160,7 @@
         renderAgendaCalendrier();
         fermerModaleHoraires();
         showToast('Horaires enregistrés.');
-      }).withFailureHandler(onError).setHorairesOuverture(joursArray, CURRENT_USER.ID);
+      }).withFailureHandler(onError).setHorairesOuverture(joursArray, CURRENT_USER.sessionToken);
     }
 
     /* ===================== Fisc (créé par le Patron) ===================== */
@@ -8803,7 +8807,7 @@
         DATA.contrats = (DATA.contrats || []).filter(c => c.ID !== id);
         renderContratsTable();
         showToast('Contrat supprimé.');
-      }).withFailureHandler(onError).supprimerContrat(id, CURRENT_USER.ID);
+      }).withFailureHandler(onError).supprimerContrat(id, CURRENT_USER.sessionToken);
     }
 
     /* ===================== Utilitaires ===================== */
