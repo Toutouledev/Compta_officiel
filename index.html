@@ -2782,7 +2782,7 @@
   </script>
   <script>
 
-    const VERSION_CLIENT = 'build-2026-08-03-X';
+    const VERSION_CLIENT = 'build-2026-08-03-Y';
 
     const APP_URL = (function () {
       const brut = '<?= appUrl ?>';
@@ -2814,11 +2814,31 @@
       return !!CURRENT_USER && !!DATA && ((DATA.rolesAdminLectureSeule || ['Admin']).indexOf(CURRENT_USER['Rôle']) !== -1 || CURRENT_USER.Permission === 'Admin');
     }
 
+    // Si le jeton de session a expiré (6h max, limite technique de Google) pendant qu'un onglet
+    // reste ouvert sans être rechargé, chaque action échouait sans explication claire. On intercepte
+    // maintenant ce cas précis pour recharger la page toute seule plutôt que de laisser planter.
+    let SESSION_EXPIREE_EN_COURS = false;
+    function gererSessionExpiree_() {
+      if (SESSION_EXPIREE_EN_COURS) return; // évite d'afficher le message plusieurs fois si plusieurs appels échouent d'un coup
+      SESSION_EXPIREE_EN_COURS = true;
+      showToast('Ta session a expiré - reconnexion...', true);
+      setTimeout(function () { location.reload(); }, 1500);
+    }
     function envelopperAppelServeur_(cible) {
       return new Proxy(cible, {
         get: function (obj, prop) {
-          if (prop === 'withSuccessHandler' || prop === 'withFailureHandler') {
+          if (prop === 'withSuccessHandler') {
             return function (fn) { return envelopperAppelServeur_(obj[prop](fn)); };
+          }
+          if (prop === 'withFailureHandler') {
+            return function (fn) {
+              const fnEnrichie = function (err) {
+                const msg = (err && (err.message || String(err))) || '';
+                if (/session (expir|invalide)/i.test(msg)) { gererSessionExpiree_(); return; }
+                fn(err);
+              };
+              return envelopperAppelServeur_(obj[prop](fnEnrichie));
+            };
           }
           const original = obj[prop];
           if (typeof original !== 'function') return original;
