@@ -1104,7 +1104,10 @@
         <div id="ventes-mode-normale">
           <div class="grid grid-2">
             <div class="card">
-              <h2>Catalogue</h2>
+              <div class="flex-between" style="align-items:center;">
+                <h2 style="margin:0;">Catalogue</h2>
+                <input id="catalogue-recherche" placeholder="Rechercher..." style="width:160px;" oninput="renderCatalogueCaisse()">
+              </div>
               <div id="catalogue-list"></div>
             </div>
             <div class="card">
@@ -2786,7 +2789,7 @@
   </script>
   <script>
 
-    const VERSION_CLIENT = 'build-2026-08-04-A';
+    const VERSION_CLIENT = 'build-2026-08-04-B';
 
     const APP_URL = (function () {
       const brut = '<?= appUrl ?>';
@@ -5389,11 +5392,14 @@
 
     function renderCatalogueCaisse() {
       const list = document.getElementById('catalogue-list');
-      list.innerHTML = articlesVisiblesPourMoi().map(item =>
+      const champRecherche = document.getElementById('catalogue-recherche');
+      const recherche = champRecherche ? champRecherche.value.trim().toLowerCase() : '';
+      const items = articlesVisiblesPourMoi().filter(item => !recherche || item.Article.toLowerCase().indexOf(recherche) !== -1);
+      list.innerHTML = items.map(item =>
         `<div class="catalogue-item" onclick="addToCart('${item.ID}')">
           <span>${escapeHtml(item.Article)}${(item.Succursale && DATA.multiSuccursalesActif) ? ` <span class="small">(${escapeHtml(item.Succursale)})</span>` : ''}</span><span class="price">${money(item['Prix vente ($)'])}</span>
         </div>`
-      ).join('') || '<div class="small">Catalogue vide.</div>';
+      ).join('') || (recherche ? '<div class="small">Aucun résultat pour "' + escapeHtml(recherche) + '".</div>' : '<div class="small">Catalogue vide.</div>');
     }
 
     function addToCart(itemId) {
