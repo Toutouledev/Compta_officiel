@@ -562,6 +562,9 @@
     .badge-statut.termine { background: var(--bg-card2); color: var(--text-mute); }
     .profil-carte-discord { text-align: center; padding: 8px 10px 18px; margin-bottom: 12px; border-bottom: 1px solid var(--border-soft); }
     .profil-carte-avatar { font-size: 34px; font-weight: 700; width: 84px; height: 84px; line-height: 84px; border-radius: 50%; background: var(--bg-card2); border: 3px solid var(--pink); margin: 0 auto 10px; text-align: center; font-family: 'Playfair Display', Georgia, serif; }
+    .avatar-puce { width: 38px; height: 38px; border-radius: 50%; background: var(--bg-card2); border: 2px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 18px; cursor: pointer; transition: border-color .1s, transform .1s; }
+    .avatar-puce:hover { transform: scale(1.08); }
+    .avatar-puce.selectionne { border-color: var(--pink); box-shadow: 0 0 0 2px var(--pink); }
     .monogramme { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 50%; background: var(--bg-card2); border: 2px solid var(--pink); font-weight: 700; font-family: 'Playfair Display', Georgia, serif; color: var(--pink); }
     .profil-carte-nom { font-size: 20px; font-weight: 800; margin-bottom: 6px; }
     .profil-carte-statut { color: var(--text-mute); font-size: 13px; margin-top: 8px; }
@@ -2662,6 +2665,10 @@
                 <input type="color" id="profil-couleur-pseudo" value="#ff3d8a" oninput="previsualiserPersonnalisation()" style="width:26px;height:26px;padding:0;border:1px solid var(--border);border-radius:5px;cursor:pointer;background:none;">
               </div>
 
+              <label class="mt10">Avatar</label>
+              <div class="small mb10">Choisis un symbole, ou laisse vide pour garder tes initiales.</div>
+              <div id="profil-avatar-grille" style="display:flex;flex-wrap:wrap;gap:6px;"></div>
+
               <label class="mt10">Statut <span class="small" id="profil-statut-compteur">0/40</span></label>
               <input id="profil-statut" placeholder="Ex: en pause, dispo pour un service..." maxlength="40" oninput="previsualiserPersonnalisation()">
 
@@ -2789,7 +2796,7 @@
   </script>
   <script>
 
-    const VERSION_CLIENT = 'build-2026-08-04-C';
+    const VERSION_CLIENT = 'build-2026-08-04-D';
 
     const APP_URL = (function () {
       const brut = '<?= appUrl ?>';
@@ -4627,7 +4634,7 @@
     const PROFIL_LABELS = { aujourdhui: "Aujourd'hui", hier: 'Hier', semaine: 'Semaine', '14jours': '14 Jours', mois: 'Mois' };
 
     function renderCarteProfil() {
-      document.getElementById('profil-carte-avatar').textContent = initiale(CURRENT_USER['Nom RP']);
+      document.getElementById('profil-carte-avatar').textContent = avatarOuInitiale(CURRENT_USER.Avatar, CURRENT_USER['Nom RP']);
       document.getElementById('profil-nomprenom').textContent = CURRENT_USER['Nom RP'] || '';
       document.getElementById('profil-role').textContent = CURRENT_USER['Rôle'] || '';
       document.getElementById('profil-carte-statut').textContent = CURRENT_USER.Statut || '';
@@ -4659,12 +4666,29 @@
       document.getElementById('profil-couleur-pseudo').value = CURRENT_USER.CouleurPseudo || '#ff3d8a';
       document.getElementById('profil-statut').value = CURRENT_USER.Statut || '';
       document.getElementById('profil-bio').value = CURRENT_USER.Bio || '';
+      AVATAR_SELECTIONNE = CURRENT_USER.Avatar || '';
+      renderAvatarGrille();
       const chatActif = (DATA.menusDesactifs || []).indexOf('chat') === -1;
       document.getElementById('profil-couleur-pseudo-ligne').classList.toggle('hidden', !chatActif);
       previsualiserPersonnalisation();
     }
     function fermerProfil() {
       document.getElementById('profil-modal').classList.add('hidden');
+    }
+    // Une petite ménagerie/sélection à choix - avec une araignée dedans comme demandé.
+    const AVATARS_DISPONIBLES = ['🎩', '🍸', '🃏', '💰', '🔫', '🚬', '🐍', '🕷️', '🎲', '🦈', '💎', '🌹', '🖤', '👑', '🥃', '🎭'];
+    let AVATAR_SELECTIONNE = '';
+    function renderAvatarGrille() {
+      const el = document.getElementById('profil-avatar-grille');
+      const vide = `<div class="avatar-puce${AVATAR_SELECTIONNE === '' ? ' selectionne' : ''}" onclick="choisirAvatar('')" title="Aucun (initiale)">${escapeHtml(initiale(CURRENT_USER['Nom RP']))}</div>`;
+      el.innerHTML = vide + AVATARS_DISPONIBLES.map(a =>
+        `<div class="avatar-puce${AVATAR_SELECTIONNE === a ? ' selectionne' : ''}" onclick="choisirAvatar('${a}')">${a}</div>`
+      ).join('');
+    }
+    function choisirAvatar(emoji) {
+      AVATAR_SELECTIONNE = emoji;
+      renderAvatarGrille();
+      previsualiserPersonnalisation();
     }
 
     function previsualiserPersonnalisation() {
@@ -4673,7 +4697,7 @@
       const bio = document.getElementById('profil-bio').value;
       document.getElementById('profil-statut-compteur').textContent = statut.length + '/40';
       document.getElementById('profil-bio-compteur').textContent = bio.length + '/200';
-      document.getElementById('profil-apercu-avatar').textContent = initiale(CURRENT_USER['Nom RP']);
+      document.getElementById('profil-apercu-avatar').textContent = avatarOuInitiale(AVATAR_SELECTIONNE, CURRENT_USER['Nom RP']);
       document.getElementById('profil-apercu-nom').textContent = CURRENT_USER['Nom RP'] || '';
       document.getElementById('profil-apercu-nom').style.color = couleur;
       document.getElementById('profil-apercu-role').textContent = CURRENT_USER['Rôle'] || '';
@@ -4687,14 +4711,15 @@
       CURRENT_USER.CouleurPseudo = couleur;
       CURRENT_USER.Statut = statut;
       CURRENT_USER.Bio = bio;
+      CURRENT_USER.Avatar = AVATAR_SELECTIONNE;
       
       const moi = DATA.employes.find(e => e.ID === CURRENT_USER.ID);
-      if (moi) { moi.CouleurPseudo = couleur; moi.Statut = statut; moi.Bio = bio; }
+      if (moi) { moi.CouleurPseudo = couleur; moi.Statut = statut; moi.Bio = bio; moi.Avatar = AVATAR_SELECTIONNE; }
       renderCarteProfil();
       previsualiserPersonnalisation();
       google.script.run.withSuccessHandler(function () {
         showToast('Personnalisation enregistrée.');
-      }).withFailureHandler(onError).updateProfilPerso(CURRENT_USER.ID, '', couleur, statut, bio, CURRENT_USER.sessionToken);
+      }).withFailureHandler(onError).updateProfilPerso(CURRENT_USER.ID, AVATAR_SELECTIONNE, couleur, statut, bio, CURRENT_USER.sessionToken);
     }
     function switchProfilSection(section, btnEl) {
       if (!antispamNavigation_()) return;
@@ -4900,7 +4925,7 @@
     function ouvrirFicheEquipe(id) {
       const e = (DATA.employes || []).find(x => x.ID === id);
       if (!e) return;
-      document.getElementById('fiche-avatar').textContent = initiale(e['Nom RP']);
+      document.getElementById('fiche-avatar').textContent = avatarOuInitiale(e.Avatar, e['Nom RP']);
       document.getElementById('fiche-nom').textContent = e['Nom RP'] || '';
       document.getElementById('fiche-role').textContent = e['Rôle'] || '';
       document.getElementById('fiche-statut').textContent = e.Statut || '';
@@ -6663,7 +6688,7 @@
         const el = document.getElementById('admin-messages-conversation');
         el.innerHTML = messages.map(m => `
           <div class="chat-msg">
-            <div class="chat-avatar">${escapeHtml((m.Expediteur || '?').charAt(0).toUpperCase())}</div>
+            <div class="chat-avatar">${(function () { const emp = (DATA.employes || []).find(e => e['Nom RP'] === m.Expediteur); return escapeHtml(avatarOuInitiale(emp && emp.Avatar, m.Expediteur)); })()}</div>
             <div class="chat-msg-body">
               <div class="chat-msg-head"><span class="chat-msg-nom">${escapeHtml(m.Expediteur)}</span><span class="chat-msg-heure">${fmtDate(m.Date)}</span>
                 <a class="linklike" onclick="supprimerMessageSurveillanceUI('${m.ID}','${id1}','${id2}','${escapeHtml(nom1)}','${escapeHtml(nom2)}')">supprimer</a>
@@ -7358,7 +7383,7 @@
       const moderation = peutModererMessages();
       el.innerHTML = messages.map(m => {
         const employe = (DATA.employes || []).find(e => e.ID === m.EmployéID);
-        const avatar = initiale(employe ? employe['Nom RP'] : m.Employé);
+        const avatar = avatarOuInitiale(employe && employe.Avatar, employe ? employe['Nom RP'] : m.Employé);
         const couleur = (employe && employe.CouleurPseudo) ? employe.CouleurPseudo : 'var(--pink)';
         const statut = employe && employe.Statut ? `<span class="chat-msg-statut">${escapeHtml(employe.Statut)}</span>` : '';
         return `
@@ -7482,7 +7507,7 @@
       el.innerHTML = messages.map(m => {
         const estMoi = m.ExpediteurID === CURRENT_USER.ID;
         const employe = (DATA.employes || []).find(e => e.ID === m.ExpediteurID);
-        const avatar = initiale(employe ? employe['Nom RP'] : m.Expediteur);
+        const avatar = avatarOuInitiale(employe && employe.Avatar, employe ? employe['Nom RP'] : m.Expediteur);
         return `<div class="chat-msg">
           <div class="chat-avatar">${avatar}</div>
           <div class="chat-msg-body">
@@ -8505,6 +8530,11 @@
     
     function initiale(nom) {
       return (nom || '?').trim().charAt(0).toUpperCase() || '?';
+    }
+    // Montre l'avatar choisi (emoji) s'il y en a un, sinon retombe sur l'initiale du nom - un seul
+    // point commun pour toutes les cartes/bulles qui affichent quelqu'un.
+    function avatarOuInitiale(avatar, nom) {
+      return avatar && avatar.trim() ? avatar.trim() : initiale(nom);
     }
     function escapeHtml(str) {
       if (str === null || str === undefined) return '';
