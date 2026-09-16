@@ -2796,7 +2796,7 @@
   </script>
   <script>
 
-    const VERSION_CLIENT = 'build-2026-08-04-D';
+    const VERSION_CLIENT = 'build-2026-08-04-E';
 
     const APP_URL = (function () {
       const brut = '<?= appUrl ?>';
@@ -4914,7 +4914,7 @@
           : shiftActif.Statut === 'pause' ? { classe: 'pause', texte: 'En pause' }
           : { classe: 'actif', texte: 'En service' };
         return `<div class="card" style="text-align:center;padding:14px;cursor:pointer;" onclick="ouvrirFicheEquipe('${e.ID}')">
-          <div class="monogramme">${initiale(e['Nom RP'])}</div>
+          <div class="monogramme">${avatarOuInitiale(e.Avatar, e['Nom RP'])}</div>
           <div style="font-weight:700;margin-top:4px;">${escapeHtml(e['Nom RP'] || '')}</div>
           <div class="small">${escapeHtml(e['Rôle'] || '')}</div>
           <span class="badge-statut ${statutShift.classe}" style="margin-top:8px;display:inline-block;">${statutShift.texte}</span>
@@ -6466,7 +6466,7 @@
         el.innerHTML = presents.map(p => {
           const employe = (DATA.employes || []).find(e => e.ID === p.EmployéID);
           return `<div class="card" style="text-align:center;padding:12px;">
-            <div class="monogramme" style="width:32px;height:32px;font-size:14px;">${initiale(employe ? employe['Nom RP'] : '?')}</div>
+            <div class="monogramme" style="width:32px;height:32px;font-size:14px;">${avatarOuInitiale(employe && employe.Avatar, employe ? employe['Nom RP'] : '?')}</div>
             <div style="font-weight:700;margin-top:4px;">${escapeHtml(p.Employé)}</div>
             <span class="badge-statut actif">En ligne</span>
           </div>`;
