@@ -50,8 +50,12 @@
                 headers: { 'Content-Type': 'text/plain;charset=utf-8' }, 
                 body: JSON.stringify({ fonction: String(nomProp), args: args })
               })
-                .then(function (r) { return r.json(); })
-                .then(function (res) {
+                .then(function (r) { return r.text(); })
+                .then(function (texte) {
+                  let res;
+                  try { res = JSON.parse(texte); } catch (e) {
+                    throw new Error("Le serveur Google a répondu une page au lieu de données - ouvre directement le classeur Google Sheets une fois pour rafraîchir la session, puis recharge cette page.");
+                  }
                   if (res.ok) { if (succesFn) succesFn(res.resultat); }
                   else { if (echecFn) echecFn(new Error(res.erreur || 'Erreur serveur inconnue.')); }
                 })
@@ -2782,7 +2786,7 @@
   </script>
   <script>
 
-    const VERSION_CLIENT = 'build-2026-08-03-Y';
+    const VERSION_CLIENT = 'build-2026-08-04-A';
 
     const APP_URL = (function () {
       const brut = '<?= appUrl ?>';
@@ -2821,6 +2825,16 @@
     function gererSessionExpiree_() {
       if (SESSION_EXPIREE_EN_COURS) return; // évite d'afficher le message plusieurs fois si plusieurs appels échouent d'un coup
       SESSION_EXPIREE_EN_COURS = true;
+      // Filet de sécurité : si la reconnexion automatique échoue elle-même de façon répétée (ex:
+      // identifiants mémorisés devenus invalides), on ne veut surtout pas recharger en boucle à
+      // l'infini - après quelques tentatives rapprochées, on laisse la personne agir manuellement.
+      let tentatives = 0;
+      try { tentatives = Number(sessionStorage.getItem('sandystrip_reload_session_expiree') || '0'); } catch (e) {  }
+      if (tentatives >= 3) {
+        showToast('Ta session a expiré et la reconnexion automatique échoue - reconnecte-toi manuellement.', true);
+        return;
+      }
+      try { sessionStorage.setItem('sandystrip_reload_session_expiree', String(tentatives + 1)); } catch (e) {  }
       showToast('Ta session a expiré - reconnexion...', true);
       setTimeout(function () { location.reload(); }, 1500);
     }
@@ -4352,6 +4366,7 @@
     }
     function logoutReel_() {
       CURRENT_USER = null; CART = [];
+      clearInterval(TIMER_SURVEILLANCE_GENERALE);
       try { localStorage.removeItem('sandystrip_auto_login'); } catch (e) {  }
       document.getElementById('app').style.display = 'none';
       document.getElementById('login-screen').classList.add('hidden');
@@ -4362,6 +4377,7 @@
     }
 
     let SURVEILLANCE_ONGLET_DEMARREE = false;
+    let TIMER_SURVEILLANCE_GENERALE = null;
     function demarrerSurveillanceVersion() {
       if (SURVEILLANCE_ONGLET_DEMARREE) return;
       SURVEILLANCE_ONGLET_DEMARREE = true;
@@ -4390,9 +4406,11 @@
           t('header.bienvenue') + ', ' + (CURRENT_USER['Nom RP'] || '') + ' (' + (CURRENT_USER['Rôle'] || '') + ')' + (CURRENT_USER.Statut ? ' - ' + CURRENT_USER.Statut : '');
 
         CAN_SEE_MASTER_SETTINGS = estValeurVraie_(CURRENT_USER.MasterSettings);
+        try { sessionStorage.removeItem('sandystrip_reload_session_expiree'); } catch (e) {  }
         demarrerSurveillanceVersion();
         surveillanceGenerale();
-        setInterval(surveillanceGenerale, 5000); 
+        clearInterval(TIMER_SURVEILLANCE_GENERALE); // au cas où une session précédente (logout/login sans recharger) en aurait laissé une tourner
+        TIMER_SURVEILLANCE_GENERALE = setInterval(surveillanceGenerale, 5000);
         finaliserEntreeApp();
       } catch (e) {
         masquerChargement();
